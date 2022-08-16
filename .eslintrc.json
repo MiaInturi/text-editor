@@ -1,3 +1,20 @@
 {
-  "extends": "next/core-web-vitals"
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["./tsconfig.json"]
+      }
+    }
+  ],
+  "extends": ["next/core-web-vitals", "airbnb-typescript"],
+  "rules": {
+    "semi": ["error", "always"],
+    "object-curly-spacing": ["error", "always"],
+    "eol-last": ["error", "always"],
+    "@typescript-eslint/comma-dangle": ["off", "always"],
+    "@typescript-eslint/lines-between-class-members": ["off", "always"],
+    "@typescript-eslint/explicit-function-return-type": "error",
+    "@typescript-eslint/consistent-type-imports": "error"
+  }
 }
