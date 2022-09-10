@@ -9,9 +9,10 @@ interface Token {
 }
 
 interface TextToken extends Token {
-  type: 'text';
+  type: Extract<TokenType, 'text'>;
 }
 
 interface NewLineToken extends Token {
-  type: 'newline';
+  type: Extract<TokenType, 'newline'>;
+  format: Extract<TokenFormat, 'default'>;
 }

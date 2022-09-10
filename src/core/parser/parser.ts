@@ -1,5 +1,3 @@
-import type { ConsumeMatchFunction, ParseFunction } from './types/parser';
-
 import { Tokens } from '../tokens/tokens';
 import { UTF16_UTIL } from './utils/constants/unicode';
 import { COMMON_TEXT_SYMBOLS_REGEXP } from './utils/constants/regexp';
@@ -12,6 +10,7 @@ export class Parser {
   private textFragmentStartPos: number = -1;
   private textFragmentEndPos: number = -1;
 
+  // TODO: delete position argument?
   public constructor(text: string, position: number = 0) {
     this.text = text;
     this.position = position;
@@ -71,10 +70,13 @@ export class Parser {
 
   public push(token: Token): void {
     // ✅ important:
-    // Call 'flush' for save text state before add new token
-    // TODO: мб flush не нужен будет?
+    // Call 'flush' for save text and chronological order before add new token
     this.flush();
     this.tokens.push(token);
+  }
+
+  public getTokens(): Token[] {
+    return this.tokens;
   }
 
   /*
