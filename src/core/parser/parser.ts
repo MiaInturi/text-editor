@@ -2,7 +2,6 @@ import { Tokens } from '../tokens';
 import { parseNewLine } from './kinds/newline';
 import { parseText } from './kinds/text';
 import { UTF16_UTIL } from './utils/constants/unicode';
-import { COMMON_TEXT_SYMBOLS_REGEXP } from './utils/constants/regexp';
 
 export class Parser {
   private text: string;
@@ -12,7 +11,6 @@ export class Parser {
   private textFragmentStartPos: number = -1;
   private textFragmentEndPos: number = -1;
 
-  // TODO: delete position argument?
   public constructor(text: string, position: number = 0) {
     this.text = text;
     this.position = position;
@@ -97,7 +95,7 @@ export class Parser {
       return true;
     }
 
-    return false;
+    throw new Error('parser.consume argument should be number or function');
   }
 
   public consumeWhile(codePointMatch: number | ConsumeMatchFunction): boolean {
