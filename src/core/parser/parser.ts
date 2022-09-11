@@ -1,4 +1,6 @@
-import { Tokens } from '../tokens/tokens';
+import { Tokens } from '../tokens';
+import { parseNewLine } from './kinds/newline';
+import { parseText } from './kinds/text';
 import { UTF16_UTIL } from './utils/constants/unicode';
 import { COMMON_TEXT_SYMBOLS_REGEXP } from './utils/constants/regexp';
 
@@ -119,12 +121,7 @@ export class Parser {
       this.textFragmentStartPos = this.position;
       this.textFragmentEndPos = this.position;
     }
-
-    const consumeTextMatchFn: ConsumeMatchFunction = (codePoint) => {
-      const codePointSymbol = String.fromCodePoint(codePoint);
-      return COMMON_TEXT_SYMBOLS_REGEXP.test(codePointSymbol);
-    };
-    this.consumeWhile(consumeTextMatchFn);
+    this.next();
     this.textFragmentEndPos = this.position;
   }
 
@@ -132,14 +129,17 @@ export class Parser {
     return this.text.substring(from, to);
   }
 
-  public parse(parseFunctions: ParseFunction[]): Token[] {
+  public parse(): Token[] {
+    const parseFunctions = [parseNewLine, parseText];
     while (this.hasNext()) {
       // ✅ important:
       // All functions should return 'boolean' for indicate of consume success/fail
       // array method 'some' will stop as soon as some of 'parseFunctions' return 'true'
       parseFunctions.some((parseFunction) => parseFunction(this));
     }
-
+    // ✅ important:
+    // Need to flush before end of parse for handle case when text token in the end 'text'
+    this.flush();
     return this.tokens;
   }
 }

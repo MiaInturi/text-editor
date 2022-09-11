@@ -1,6 +1,4 @@
 import { Parser } from './parser';
-import { parseNewLine } from './kinds/newline';
-import { parseText } from './kinds/text';
 
 describe('Parser class: "tell", "seek" methods', () => {
   test('"tell" return correct position', () => {
@@ -34,7 +32,7 @@ describe('Parser class: "flush", "push" methods', () => {
       {
         type: 'text',
         format: 'default',
-        value: 'Hello'
+        value: 'H'
       }
     ];
 
@@ -61,7 +59,7 @@ describe('Parser class: "flush", "push" methods', () => {
       {
         type: 'text',
         format: 'default',
-        value: 'Hello'
+        value: 'H'
       },
       token
     ];
@@ -140,14 +138,14 @@ describe('Parser class: "consume", "consumeWhile" methods', () => {
 });
 
 describe('Parser class: "consumeText", "parse" method', () => {
-  test('"consumeText" before special symbol', () => {
+  test('"consumeText" get first symbol from position', () => {
     const text = 'Hello\nWorld\n';
     const parser = new Parser(text);
     const expectedTokens: Token[] = [
       {
         type: 'text',
         format: 'default',
-        value: 'Hello'
+        value: 'H'
       }
     ];
 
@@ -160,7 +158,6 @@ describe('Parser class: "consumeText", "parse" method', () => {
 
   test('"parse" text only with common symbols', () => {
     const text = 'Hello World: 你好世界';
-    const parseFunctions = [parseNewLine, parseText];
     const parser = new Parser(text);
     const expectedTokens: Token[] = [
       {
@@ -170,12 +167,11 @@ describe('Parser class: "consumeText", "parse" method', () => {
       }
     ];
 
-    expect(parser.parse(parseFunctions)).toStrictEqual(expectedTokens);
+    expect(parser.parse()).toStrictEqual(expectedTokens);
   });
 
   test('"parse" text only with new line symbols', () => {
     const text = '\n\r\r\n\n';
-    const parseFunctions = [parseNewLine, parseText];
     const parser = new Parser(text);
     const expectedTokens: Token[] = [
       {
@@ -200,12 +196,11 @@ describe('Parser class: "consumeText", "parse" method', () => {
       }
     ];
 
-    expect(parser.parse(parseFunctions)).toStrictEqual(expectedTokens);
+    expect(parser.parse()).toStrictEqual(expectedTokens);
   });
 
   test('"parse" text with common and new line symbols', () => {
     const text = 'Hello\n\rWorld:\r\n你好世界\n';
-    const parseFunctions = [parseNewLine, parseText];
     const parser = new Parser(text);
     const expectedTokens: Token[] = [
       {
@@ -245,6 +240,6 @@ describe('Parser class: "consumeText", "parse" method', () => {
       }
     ];
 
-    expect(parser.parse(parseFunctions)).toStrictEqual(expectedTokens);
+    expect(parser.parse()).toStrictEqual(expectedTokens);
   });
 });

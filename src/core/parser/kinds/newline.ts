@@ -1,6 +1,6 @@
 import type { Parser } from '../parser';
 
-import { Tokens } from '../../tokens/tokens';
+import { Tokens } from '../../tokens';
 import { UNICODE_CODES } from '../utils/constants';
 
 const consumeNewLine = (parser: Parser): boolean => {
