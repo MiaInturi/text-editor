@@ -20,7 +20,7 @@ describe('Parser class: "tell", "seek" methods', () => {
 describe('Parser class: "flush", "push" methods', () => {
   test('"flush" does not add token if text pending process not running', () => {
     const parser = new Parser('');
-    parser.flush();
+    parser.flushTokens();
 
     expect(parser.getTokens()).toHaveLength(0);
   });
@@ -37,7 +37,7 @@ describe('Parser class: "flush", "push" methods', () => {
     ];
 
     parser.consumeText();
-    parser.flush();
+    parser.flushTokens();
 
     expect(parser.getTokens()).toStrictEqual(expectedTokens);
   });
@@ -46,7 +46,7 @@ describe('Parser class: "flush", "push" methods', () => {
     const parser = new Parser('');
     const token: TextToken = { type: 'text', format: 'default', value: 'value' };
     const expectedTokens: Token[] = [token];
-    parser.push(token);
+    parser.addToken(token);
 
     expect(parser.getTokens()).toStrictEqual(expectedTokens);
   });
@@ -65,7 +65,7 @@ describe('Parser class: "flush", "push" methods', () => {
     ];
 
     parser.consumeText();
-    parser.push(token);
+    parser.addToken(token);
 
     expect(parser.getTokens()).toStrictEqual(expectedTokens);
   });
@@ -73,7 +73,7 @@ describe('Parser class: "flush", "push" methods', () => {
 
 describe('Parser class: "consume", "consumeWhile" methods', () => {
   test('"consume" by code point', () => {
-    const symbolCodePoint = 'H'.codePointAt(0) as number;
+    const symbolCodePoint = 'H'.codePointAt(0) as CodePoint;
 
     const succeedConsumeText = 'Hello';
     const succeedParser = new Parser(succeedConsumeText);
@@ -105,7 +105,7 @@ describe('Parser class: "consume", "consumeWhile" methods', () => {
   });
 
   test('"consumeWhile" by code point', () => {
-    const symbolCodePoint = '\n'.codePointAt(0) as number;
+    const symbolCodePoint = '\n'.codePointAt(0) as CodePoint;
 
     const succeedConsumeWhileText = '\n\n\n';
     const succeedParser = new Parser(succeedConsumeWhileText);
@@ -150,7 +150,7 @@ describe('Parser class: "consumeText", "parse" method', () => {
     ];
 
     parser.consumeText();
-    parser.flush();
+    parser.flushTokens();
 
     expect(parser.getTokens()).toStrictEqual(expectedTokens);
   });

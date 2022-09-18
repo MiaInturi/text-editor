@@ -14,4 +14,12 @@ export class Tokens {
       value
     };
   }
+
+  public static createHashTagToken(value: string): HashTagToken {
+    return {
+      type: 'hashtag',
+      format: 'default',
+      value
+    };
+  }
 }

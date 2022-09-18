@@ -1,10 +1,14 @@
 import { Tokens } from '../tokens';
+import { parseHashTag } from './kinds/hashtag';
 import { parseNewLine } from './kinds/newline';
 import { parseText } from './kinds/text';
-import { UTF16_UTIL } from './utils/constants/unicode';
+import { isDelimiter } from './utils/helpers/shared';
+import { last } from '../../utils/helpers/array';
+import { UTF16_UTIL } from './utils/constants';
+import { TOKEN_TYPE } from '../tokens/utils/constants';
 
 export class Parser {
-  private text: string;
+  private readonly text: string;
   private position: number;
 
   private tokens: Token[] = [];
@@ -27,16 +31,35 @@ export class Parser {
     this.position = position;
   }
 
-  private peek(): number | undefined {
+  private peekNext(): CodePoint | undefined {
+    // TODO handle emoji
     return this.text.codePointAt(this.position);
   }
 
-  private next(): number | undefined {
+  private peekPrev(): CodePoint | undefined {
+    // TODO handle emoji
+    const isPrevCodePointExists = this.position > 0;
+    if (!isPrevCodePointExists) return;
+
+    // ✅ important:
+    // If prev index code point in special range (from 0xDC00 to 0xDFFF)
+    // then codePoint contains high and low surrogates
+    const prevIndexCodePoint = this.text.codePointAt(this.position - 1)!;
+    const isPrevIndexCodePointContainsHighAndLowSurrogates = (
+      prevIndexCodePoint >= UTF16_UTIL.LOW_SURROGATE_MIN_VALUE
+      && prevIndexCodePoint <= UTF16_UTIL.LOW_SURROGATE_MAX_VALUE
+    );
+
+    const positionShift = isPrevIndexCodePointContainsHighAndLowSurrogates ? UTF16_UTIL.MAX_UNIT_COUNT : UTF16_UTIL.MIN_UNIT_COUNT;
+    return this.text.codePointAt(this.position - positionShift);
+  }
+
+  private next(): CodePoint | undefined {
     const isNextCodePointExists = this.hasNext();
     if (!isNextCodePointExists) return;
 
-    const nextCodePoint = this.text.codePointAt(this.position);
-    this.incrementPosition(nextCodePoint!);
+    const nextCodePoint = this.text.codePointAt(this.position)!;
+    this.incrementPosition(nextCodePoint);
     return nextCodePoint;
   }
 
@@ -44,35 +67,46 @@ export class Parser {
     return this.position < this.text.length;
   }
 
-  private incrementPosition(codePoint: number): void {
+  private incrementPosition(codePoint: CodePoint): void {
     // TODO handle emoji
     // ✅ important:
-    // Need to calculate units that needed for codePoint
+    // Calculate units that needed for codePoint
     // because String.length property equals to units count in string
-    const isCodePointNeedsMoreThanOneUnit = codePoint > UTF16_UTIL.UNIT_MAX_VALUE;
-    this.position += isCodePointNeedsMoreThanOneUnit ? UTF16_UTIL.MAX_UNIT_COUNT : UTF16_UTIL.MIN_UNIT_COUNT;
+    const isCodePointContainsHighAndLowSurrogates = codePoint > UTF16_UTIL.UNIT_MAX_VALUE;
+    const positionShift = isCodePointContainsHighAndLowSurrogates ? UTF16_UTIL.MAX_UNIT_COUNT : UTF16_UTIL.MIN_UNIT_COUNT;
+    this.seek(this.position + positionShift);
+  }
+
+  /*
+  Work with near position symbols
+   */
+  public isNewWordBound(): boolean {
+    if (!this.position) return true;
+    if (this.isTextConsuming()) return isDelimiter(this.peekPrev() ?? NaN);
+
+    const lastTokenType = last(this.tokens)?.type;
+    return lastTokenType === TOKEN_TYPE.NEWLINE;
   }
   
   /*
   Work with tokens
    */
-  public flush(): void {
+  public addToken(token: Token): void {
+    // ✅ important:
+    // Call 'flush' for save text and chronological order before add new token
+    this.flushTokens();
+    this.tokens.push(token);
+  }
+
+  public flushTokens(): void {
     // ✅ important:
     // Need to push text token into 'tokens' only if we are in the middle of a parsing process
-    const isTextPending = this.textFragmentStartPos !== this.textFragmentEndPos;
-    if (!isTextPending) return;
+    if (!this.isTextConsuming()) return;
 
     const textForToken = this.text.substring(this.textFragmentStartPos, this.textFragmentEndPos);
     this.textFragmentStartPos = -1;
     this.textFragmentEndPos = -1;
     this.tokens.push(Tokens.createTextToken(textForToken));
-  }
-
-  public push(token: Token): void {
-    // ✅ important:
-    // Call 'flush' for save text and chronological order before add new token
-    this.flush();
-    this.tokens.push(token);
   }
 
   public getTokens(): Token[] {
@@ -82,8 +116,8 @@ export class Parser {
   /*
   Work with consuming
    */
-  public consume(codePointMatch: number | ConsumeMatchFunction): boolean {
-    const codePoint = this.peek();
+  public consume(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
+    const codePoint = this.peekNext();
     if (!codePoint) return false;
 
     if (typeof codePointMatch === 'number' && codePoint === codePointMatch) {
@@ -98,7 +132,7 @@ export class Parser {
     throw new Error('parser.consume argument should be number or function');
   }
 
-  public consumeWhile(codePointMatch: number | ConsumeMatchFunction): boolean {
+  public consumeWhile(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
     // ✅ important:
     // Return 'true' if at least one consume was successful
     const positionBeforeConsumeWhile = this.position;
@@ -113,9 +147,16 @@ export class Parser {
   /*
   Work with text
    */
+  public getTextFragment(from: number, to: number): string {
+    return this.text.substring(from, to);
+  }
+
+  public isTextConsuming(): boolean {
+    return this.textFragmentStartPos !== this.textFragmentEndPos;
+  }
+
   public consumeText(): void {
-    const isTextPending = this.textFragmentStartPos !== this.textFragmentEndPos;
-    if (!isTextPending) {
+    if (!this.isTextConsuming()) {
       this.textFragmentStartPos = this.position;
       this.textFragmentEndPos = this.position;
     }
@@ -123,12 +164,8 @@ export class Parser {
     this.textFragmentEndPos = this.position;
   }
 
-  public getTextFragment(from: number, to: number): string {
-    return this.text.substring(from, to);
-  }
-
   public parse(): Token[] {
-    const parseFunctions = [parseNewLine, parseText];
+    const parseFunctions = [parseHashTag, parseNewLine, parseText];
     while (this.hasNext()) {
       // ✅ important:
       // All functions should return 'boolean' for indicate of consume success/fail
@@ -137,7 +174,7 @@ export class Parser {
     }
     // ✅ important:
     // Need to flush before end of parse for handle case when text token in the end 'text'
-    this.flush();
+    this.flushTokens();
     return this.tokens;
   }
 }
