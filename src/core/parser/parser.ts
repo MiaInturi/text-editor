@@ -1,7 +1,7 @@
 import { Tokens } from '../tokens';
-import { parseHashTag } from './kinds/hashtag';
-import { parseNewLine } from './kinds/newline';
-import { parseText } from './kinds/text';
+import { parseHashTag } from './kinds/hashtag/hashtag';
+import { parseNewLine } from './kinds/newline/newline';
+import { parseText } from './kinds/text/text';
 import { isDelimiter } from './utils/helpers/shared';
 import { last } from '../../utils/helpers/array';
 import { UTF16_UTIL } from './utils/constants';
@@ -129,7 +129,7 @@ export class Parser {
       return true;
     }
 
-    throw new Error('parser.consume argument should be number or function');
+    return false;
   }
 
   public consumeWhile(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {

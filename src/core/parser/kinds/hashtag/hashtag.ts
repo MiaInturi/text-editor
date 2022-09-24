@@ -1,9 +1,9 @@
-import type { Parser } from '../parser';
-import { Tokens } from '../../tokens';
-import { isHashTagName } from '../utils/helpers/hashtag';
-import { last } from '../../../utils/helpers/array';
-import { TOKEN_TYPE } from '../../tokens/utils/constants';
-import { UNICODE_CODES } from '../utils/constants';
+import type { Parser } from '../../parser';
+import { Tokens } from '../../../tokens';
+import { isHashTagName } from '../../utils/helpers/hashtag';
+import { last } from '../../../../utils/helpers/array';
+import { TOKEN_TYPE } from '../../../tokens/utils/constants';
+import { UNICODE_CODES } from '../../utils/constants';
 
 const isHashTagBound = (parser: Parser): boolean => {
   if (parser.isNewWordBound()) return true;
@@ -21,7 +21,9 @@ const isHashTagBound = (parser: Parser): boolean => {
 
 const consumeHashTag = (parser: Parser): boolean => {
   if (isHashTagBound(parser)) {
-    return parser.consume(UNICODE_CODES.HASHTAG) && parser.consumeWhile(isHashTagName);
+    const isHashTagWasSuccessfullyConsumed = parser.consume(UNICODE_CODES.HASHTAG);
+    const isHashTagNameWasSuccessfullyConsumed = parser.consumeWhile(isHashTagName);
+    return isHashTagWasSuccessfullyConsumed && isHashTagNameWasSuccessfullyConsumed;
   }
   return false;
 };
