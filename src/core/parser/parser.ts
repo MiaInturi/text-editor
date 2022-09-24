@@ -31,61 +31,42 @@ export class Parser {
     this.position = position;
   }
 
-  private peekNext(): CodePoint | undefined {
+  private checkNext(): CodePoint | undefined {
     // TODO handle emoji
     return this.text.codePointAt(this.position);
   }
 
-  private peekPrev(): CodePoint | undefined {
-    // TODO handle emoji
+  private checkPrev(): CodePoint | undefined {
     const isPrevCodePointExists = this.position > 0;
     if (!isPrevCodePointExists) return;
 
+    // TODO handle emoji
     // ✅ important:
     // If prev index code point in special range (from 0xDC00 to 0xDFFF)
     // then codePoint contains high and low surrogates
     const prevIndexCodePoint = this.text.codePointAt(this.position - 1)!;
-    const isPrevIndexCodePointContainsHighAndLowSurrogates = (
-      prevIndexCodePoint >= UTF16_UTIL.LOW_SURROGATE_MIN_VALUE
-      && prevIndexCodePoint <= UTF16_UTIL.LOW_SURROGATE_MAX_VALUE
-    );
-
+    const isPrevIndexCodePointContainsHighAndLowSurrogates = prevIndexCodePoint >= UTF16_UTIL.LOW_SURROGATE_MIN_VALUE && prevIndexCodePoint <= UTF16_UTIL.LOW_SURROGATE_MAX_VALUE;
     const positionShift = isPrevIndexCodePointContainsHighAndLowSurrogates ? UTF16_UTIL.MAX_UNIT_COUNT : UTF16_UTIL.MIN_UNIT_COUNT;
     return this.text.codePointAt(this.position - positionShift);
   }
 
-  private next(): CodePoint | undefined {
-    const isNextCodePointExists = this.hasNext();
-    if (!isNextCodePointExists) return;
-
-    const nextCodePoint = this.text.codePointAt(this.position)!;
-    this.incrementPosition(nextCodePoint);
-    return nextCodePoint;
-  }
-
-  private hasNext(): boolean {
+  private isNextExists(): boolean {
     return this.position < this.text.length;
   }
 
-  private incrementPosition(codePoint: CodePoint): void {
+  private selectNext(): CodePoint | undefined {
+    const isNextCodePointExists = this.isNextExists();
+    if (!isNextCodePointExists) return;
+
     // TODO handle emoji
     // ✅ important:
     // Calculate units that needed for codePoint
     // because String.length property equals to units count in string
-    const isCodePointContainsHighAndLowSurrogates = codePoint > UTF16_UTIL.UNIT_MAX_VALUE;
+    const nextCodePoint = this.text.codePointAt(this.position)!;
+    const isCodePointContainsHighAndLowSurrogates = nextCodePoint > UTF16_UTIL.UNIT_MAX_VALUE;
     const positionShift = isCodePointContainsHighAndLowSurrogates ? UTF16_UTIL.MAX_UNIT_COUNT : UTF16_UTIL.MIN_UNIT_COUNT;
     this.seek(this.position + positionShift);
-  }
-
-  /*
-  Work with near position symbols
-   */
-  public isNewWordBound(): boolean {
-    if (!this.position) return true;
-    if (this.isTextConsuming()) return isDelimiter(this.peekPrev() ?? NaN);
-
-    const lastTokenType = last(this.tokens)?.type;
-    return lastTokenType === TOKEN_TYPE.NEWLINE;
+    return nextCodePoint;
   }
   
   /*
@@ -106,7 +87,7 @@ export class Parser {
     const textForToken = this.text.substring(this.textFragmentStartPos, this.textFragmentEndPos);
     this.textFragmentStartPos = -1;
     this.textFragmentEndPos = -1;
-    this.tokens.push(Tokens.createTextToken(textForToken));
+    this.tokens.push(Tokens.CreateTextToken(textForToken));
   }
 
   public getTokens(): Token[] {
@@ -117,15 +98,15 @@ export class Parser {
   Work with consuming
    */
   public consume(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
-    const codePoint = this.peekNext();
+    const codePoint = this.checkNext();
     if (!codePoint) return false;
 
     if (typeof codePointMatch === 'number' && codePoint === codePointMatch) {
-      this.next();
+      this.selectNext();
       return true;
     }
     if (typeof codePointMatch === 'function' && codePointMatch(codePoint)) {
-      this.next();
+      this.selectNext();
       return true;
     }
 
@@ -137,7 +118,7 @@ export class Parser {
     // Return 'true' if at least one consume was successful
     const positionBeforeConsumeWhile = this.position;
     while (true) {
-      const isConsumeSuccess = this.hasNext() && this.consume(codePointMatch);
+      const isConsumeSuccess = this.isNextExists() && this.consume(codePointMatch);
       if (!isConsumeSuccess) break;
     }
     const positionAfterConsumeWhile = this.position;
@@ -147,12 +128,20 @@ export class Parser {
   /*
   Work with text
    */
-  public getTextFragment(from: number, to: number): string {
-    return this.text.substring(from, to);
-  }
-
   public isTextConsuming(): boolean {
     return this.textFragmentStartPos !== this.textFragmentEndPos;
+  }
+
+  public isNewWordBound(): boolean {
+    if (!this.position) return true;
+    if (this.isTextConsuming()) return isDelimiter(this.checkPrev() ?? NaN);
+
+    const lastTokenType = last(this.tokens)?.type;
+    return lastTokenType === TOKEN_TYPE.NEWLINE;
+  }
+
+  public getTextFragment(from: number, to: number): string {
+    return this.text.substring(from, to);
   }
 
   public consumeText(): void {
@@ -160,13 +149,13 @@ export class Parser {
       this.textFragmentStartPos = this.position;
       this.textFragmentEndPos = this.position;
     }
-    this.next();
+    this.selectNext();
     this.textFragmentEndPos = this.position;
   }
 
   public parse(): Token[] {
     const parseFunctions = [parseHashTag, parseNewLine, parseText];
-    while (this.hasNext()) {
+    while (this.isNextExists()) {
       // ✅ important:
       // All functions should return 'boolean' for indicate of consume success/fail
       // array method 'some' will stop as soon as some of 'parseFunctions' return 'true'

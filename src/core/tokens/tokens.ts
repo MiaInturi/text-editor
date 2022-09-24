@@ -1,5 +1,5 @@
 export class Tokens {
-  public static createTextToken(value: string, format?: TokenFormat): TextToken {
+  public static CreateTextToken(value: string, format?: TokenFormat): TextToken {
     return {
       type: 'text',
       format: format ?? 'default',
@@ -7,7 +7,7 @@ export class Tokens {
     };
   }
 
-  public static createNewLineToken(value: string): NewLineToken {
+  public static CreateNewLineToken(value: string): NewLineToken {
     return {
       type: 'newline',
       format: 'default',
@@ -15,7 +15,7 @@ export class Tokens {
     };
   }
 
-  public static createHashTagToken(value: string): HashTagToken {
+  public static CreateHashTagToken(value: string): HashTagToken {
     return {
       type: 'hashtag',
       format: 'default',

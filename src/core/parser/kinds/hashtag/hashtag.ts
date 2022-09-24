@@ -33,7 +33,7 @@ export const parseHashTag = (parser: Parser): boolean => {
   if (consumeHashTag(parser)) {
     const positionAfterConsumeHashTag = parser.tell();
     const hashTagValue = parser.getTextFragment(positionBeforeConsumeHashTag, positionAfterConsumeHashTag);
-    parser.addToken(Tokens.createHashTagToken(hashTagValue));
+    parser.addToken(Tokens.CreateHashTagToken(hashTagValue));
     return true;
   }
   // ✅ important:

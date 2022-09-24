@@ -2,7 +2,7 @@ import { Tokens } from './tokens';
 
 describe('Tokens class', () => {
   test('createTextToken without format', () => {
-    const textToken = Tokens.createTextToken('value');
+    const textToken = Tokens.CreateTextToken('value');
     const expectedTextToken: TextToken = {
       type: 'text',
       format: 'default',
@@ -13,7 +13,7 @@ describe('Tokens class', () => {
   });
 
   test('createTextToken with bold format', () => {
-    const textToken = Tokens.createTextToken('value', 'bold');
+    const textToken = Tokens.CreateTextToken('value', 'bold');
     const expectedTextToken: TextToken = {
       type: 'text',
       format: 'bold',
@@ -24,7 +24,7 @@ describe('Tokens class', () => {
   });
 
   test('createTextToken with italic format', () => {
-    const textToken = Tokens.createTextToken('value', 'italic');
+    const textToken = Tokens.CreateTextToken('value', 'italic');
     const expectedTextToken: TextToken = {
       type: 'text',
       format: 'italic',
@@ -35,7 +35,7 @@ describe('Tokens class', () => {
   });
 
   test('createNewLineToken', () => {
-    const newLineToken = Tokens.createNewLineToken('\n');
+    const newLineToken = Tokens.CreateNewLineToken('\n');
     const expectedNewLineToken: NewLineToken = {
       type: 'newline',
       format: 'default',

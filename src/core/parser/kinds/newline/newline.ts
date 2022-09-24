@@ -18,7 +18,7 @@ export const parseNewLine = (parser: Parser): boolean => {
   if (consumeNewLine(parser)) {
     const positionAfterConsumeNewLine = parser.tell();
     const newLineValue = parser.getTextFragment(positionBeforeConsumeNewLine, positionAfterConsumeNewLine);
-    parser.addToken(Tokens.createNewLineToken(newLineValue));
+    parser.addToken(Tokens.CreateNewLineToken(newLineValue));
     return true;
   }
   return false;
