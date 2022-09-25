@@ -6,7 +6,7 @@ import { TOKEN_TYPE } from '../../../tokens/utils/constants';
 import { UNICODE_CODES } from '../../utils/constants';
 
 const isHashTagBound = (parser: Parser): boolean => {
-  if (parser.isNewWordBound()) return true;
+  if (parser.isTextWordBound()) return true;
 
   // ✅ important:
   // Hashtags can be concatenated
@@ -21,8 +21,8 @@ const isHashTagBound = (parser: Parser): boolean => {
 
 const consumeHashTag = (parser: Parser): boolean => {
   if (isHashTagBound(parser)) {
-    const isHashTagWasSuccessfullyConsumed = parser.consume(UNICODE_CODES.HASHTAG);
-    const isHashTagNameWasSuccessfullyConsumed = parser.consumeWhile(isHashTagName);
+    const isHashTagWasSuccessfullyConsumed = parser.consumeSpecialSymbol(UNICODE_CODES.HASHTAG);
+    const isHashTagNameWasSuccessfullyConsumed = parser.consumeSpecialSymbolWhile(isHashTagName);
     return isHashTagWasSuccessfullyConsumed && isHashTagNameWasSuccessfullyConsumed;
   }
   return false;

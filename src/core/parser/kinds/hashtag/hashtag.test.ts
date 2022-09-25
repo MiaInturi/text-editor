@@ -8,6 +8,12 @@ describe('Hashtag parse', () => {
     expect(parseHashTag(parser)).toBe(false);
   });
 
+  test('Hashtag not be parsed if it present without name', () => {
+    const text = '#';
+    const parser = new Parser(text);
+    expect(parseHashTag(parser)).toBe(false);
+  });
+
   test('Successful parse hashtag', () => {
     const text = '#TextWithHashtag';
     const parser = new Parser(text);

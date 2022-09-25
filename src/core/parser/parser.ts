@@ -16,6 +16,7 @@ export class Parser {
   private textFragmentEndPos: number = -1;
 
   public constructor(text: string, position: number = 0) {
+    if (position > text.length) throw new Error('Position cannot be greater than text length');
     this.text = text;
     this.position = position;
   }
@@ -28,6 +29,7 @@ export class Parser {
   }
 
   public seek(position: number): void {
+    if (position > this.text.length) throw new Error('Position cannot be greater than text length');
     this.position = position;
   }
 
@@ -50,12 +52,12 @@ export class Parser {
     return this.text.codePointAt(this.position - positionShift);
   }
 
-  private isNextExists(): boolean {
+  private isHasNext(): boolean {
     return this.position < this.text.length;
   }
 
   private selectNext(): CodePoint | undefined {
-    const isNextCodePointExists = this.isNextExists();
+    const isNextCodePointExists = this.isHasNext();
     if (!isNextCodePointExists) return;
 
     // TODO handle emoji
@@ -72,16 +74,10 @@ export class Parser {
   /*
   Work with tokens
    */
-  public addToken(token: Token): void {
-    // ✅ important:
-    // Call 'flush' for save text and chronological order before add new token
-    this.flushTokens();
-    this.tokens.push(token);
-  }
-
   public flushTokens(): void {
     // ✅ important:
     // Need to push text token into 'tokens' only if we are in the middle of a parsing process
+    // Because not text tokens push themselves
     if (!this.isTextConsuming()) return;
 
     const textForToken = this.text.substring(this.textFragmentStartPos, this.textFragmentEndPos);
@@ -90,14 +86,21 @@ export class Parser {
     this.tokens.push(Tokens.CreateTextToken(textForToken));
   }
 
+  public addToken(token: Token): void {
+    // ✅ important:
+    // Call 'flush' for save text and chronological order before add new token
+    this.flushTokens();
+    this.tokens.push(token);
+  }
+
   public getTokens(): Token[] {
     return this.tokens;
   }
 
   /*
-  Work with consuming
+  Work with consuming special symbols
    */
-  public consume(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
+  public consumeSpecialSymbol(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
     const codePoint = this.checkNext();
     if (!codePoint) return false;
 
@@ -113,12 +116,12 @@ export class Parser {
     return false;
   }
 
-  public consumeWhile(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
+  public consumeSpecialSymbolWhile(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
     // ✅ important:
     // Return 'true' if at least one consume was successful
     const positionBeforeConsumeWhile = this.position;
     while (true) {
-      const isConsumeSuccess = this.isNextExists() && this.consume(codePointMatch);
+      const isConsumeSuccess = this.isHasNext() && this.consumeSpecialSymbol(codePointMatch);
       if (!isConsumeSuccess) break;
     }
     const positionAfterConsumeWhile = this.position;
@@ -128,16 +131,16 @@ export class Parser {
   /*
   Work with text
    */
-  public isTextConsuming(): boolean {
-    return this.textFragmentStartPos !== this.textFragmentEndPos;
-  }
-
-  public isNewWordBound(): boolean {
+  public isTextWordBound(): boolean {
     if (!this.position) return true;
     if (this.isTextConsuming()) return isDelimiter(this.checkPrev() ?? NaN);
 
     const lastTokenType = last(this.tokens)?.type;
     return lastTokenType === TOKEN_TYPE.NEWLINE;
+  }
+
+  public isTextConsuming(): boolean {
+    return this.textFragmentStartPos !== this.textFragmentEndPos;
   }
 
   public getTextFragment(from: number, to: number): string {
@@ -155,7 +158,7 @@ export class Parser {
 
   public parse(): Token[] {
     const parseFunctions = [parseHashTag, parseNewLine, parseText];
-    while (this.isNextExists()) {
+    while (this.isHasNext()) {
       // ✅ important:
       // All functions should return 'boolean' for indicate of consume success/fail
       // array method 'some' will stop as soon as some of 'parseFunctions' return 'true'
@@ -164,6 +167,6 @@ export class Parser {
     // ✅ important:
     // Need to flush before end of parse for handle case when text token in the end 'text'
     this.flushTokens();
-    return this.tokens;
+    return this.getTokens();
   }
 }

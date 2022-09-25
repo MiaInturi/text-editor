@@ -6,11 +6,11 @@ import { UNICODE_CODES } from '../../utils/constants';
 const consumeNewLine = (parser: Parser): boolean => {
   // ✅ important:
   // Consume '\r', '\n', '\r\n' as NewLine
-  if (parser.consume(UNICODE_CODES.RETURN)) {
-    parser.consume(UNICODE_CODES.NEWLINE);
+  if (parser.consumeSpecialSymbol(UNICODE_CODES.RETURN)) {
+    parser.consumeSpecialSymbol(UNICODE_CODES.NEWLINE);
     return true;
   }
-  return parser.consume(UNICODE_CODES.NEWLINE);
+  return parser.consumeSpecialSymbol(UNICODE_CODES.NEWLINE);
 };
 
 export const parseNewLine = (parser: Parser): boolean => {
