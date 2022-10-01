@@ -1,11 +1,11 @@
-import { Tokens } from '../tokens';
-import { parseHashTag } from './kinds/hashtag/hashtag';
-import { parseNewLine } from './kinds/newline/newline';
-import { parseText } from './kinds/text/text';
-import { isDelimiter } from './utils/helpers/shared';
-import { last } from '../../utils/helpers/array';
-import { UTF16_UTIL } from './utils/constants';
-import { TOKEN_TYPE } from '../tokens/utils/constants';
+import { parseHashTag } from '@core/parser/kinds/hashtag/hashtag';
+import { parseNewLine } from '@core/parser/kinds/newline/newline';
+import { parseText } from '@core/parser/kinds/text/text';
+import { Tokens } from '@core/tokens/tokens';
+import { isDelimiter } from '@core/parser/utils/helpers/shared';
+import { last } from '@utils/helpers/array';
+import { UTF16_UTIL } from '@core/parser/utils/constants';
+import { TOKEN_TYPE } from '@core/tokens/utils/constants';
 
 export class Parser {
   private readonly text: string;

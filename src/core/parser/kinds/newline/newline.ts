@@ -1,7 +1,6 @@
-import type { Parser } from '../../parser';
-
-import { Tokens } from '../../../tokens';
-import { UNICODE_CODES } from '../../utils/constants';
+import type { Parser } from '@core/parser/parser';
+import { Tokens } from '@core/tokens/tokens';
+import { UNICODE_CODES } from '@core/parser/utils/constants';
 
 const consumeNewLine = (parser: Parser): boolean => {
   // ✅ important:
