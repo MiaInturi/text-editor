@@ -1,4 +1,4 @@
-import { Parser } from '../../parser';
+import { Parser } from '@core/parser/parser';
 import { parseNewLine } from './newline';
 
 describe('Newline parse', () => {

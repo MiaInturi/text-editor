@@ -1,9 +1,9 @@
-import type { Parser } from '../../parser';
-import { Tokens } from '../../../tokens';
-import { isHashTagName } from '../../utils/helpers/hashtag';
-import { last } from '../../../../utils/helpers/array';
-import { TOKEN_TYPE } from '../../../tokens/utils/constants';
-import { UNICODE_CODES } from '../../utils/constants';
+import type { Parser } from '@core/parser/parser';
+import { Tokens } from '@core/tokens/tokens';
+import { isHashTagName } from '@core/parser/utils/helpers/hashtag';
+import { last } from '@utils/helpers/array';
+import { UNICODE_CODES } from '@core/parser/utils/constants';
+import { TOKEN_TYPE } from '@core/tokens/utils/constants';
 
 const isHashTagBound = (parser: Parser): boolean => {
   if (parser.isTextWordBound()) return true;
