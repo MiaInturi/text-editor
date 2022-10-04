@@ -14,17 +14,14 @@ describe('Newline parse', () => {
     const expectedTokens: Token[] = [
       {
         type: 'newline',
-        format: 'default',
         value: '\r'
       },
       {
         type: 'newline',
-        format: 'default',
         value: '\r\n'
       },
       {
         type: 'newline',
-        format: 'default',
         value: '\n'
       }
     ];

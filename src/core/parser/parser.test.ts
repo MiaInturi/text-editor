@@ -46,7 +46,6 @@ describe('Parser class: add, get, flush tokens', () => {
     const expectedTokens: Token[] = [
       {
         type: 'text',
-        format: 'default',
         value: text.substring(0, 1)
       }
     ];
@@ -61,18 +60,15 @@ describe('Parser class: add, get, flush tokens', () => {
     const parser = new Parser(text);
     const tokenForAdd: Token = {
       type: 'hashtag',
-      format: 'default',
       value: '#hashtag'
     };
     const expectedTokens: Token[] = [
       {
         type: 'text',
-        format: 'default',
         value: text.substring(0, 1)
       },
       {
         type: 'hashtag',
-        format: 'default',
         value: '#hashtag'
       }
     ];
@@ -170,14 +166,14 @@ describe('Parser class: text word bound check', () => {
   test('"isTextWordBound" returns "false" if text not consuming and last pushed token is not "newline"', () => {
     const text = 'text';
     const parser = new Parser(text, text.length);
-    parser.addToken({ type: 'hashtag', format: 'default', value: '#hashtag' });
+    parser.addToken({ type: 'hashtag', value: '#hashtag' });
     expect(parser.isTextWordBound()).toBe(false);
   });
 
   test('"isTextWordBound" returns "true" if text not consuming and last pushed token is "newline"', () => {
     const text = 'text';
     const parser = new Parser(text);
-    parser.addToken({ type: 'newline', format: 'default', value: '\n' });
+    parser.addToken({ type: 'newline', value: '\n' });
     expect(parser.isTextWordBound()).toBe(true);
   });
 });

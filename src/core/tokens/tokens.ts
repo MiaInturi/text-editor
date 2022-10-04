@@ -1,25 +1,24 @@
 export class Tokens {
-  public static CreateTextToken(value: string, format?: TokenFormat): TextToken {
+  public static CreateTextToken(value: string, formats?: TokenFormat[]): TextToken {
     return {
       type: 'text',
-      format: format ?? 'default',
-      value
+      value,
+      ...(formats && { formats })
     };
   }
 
   public static CreateNewLineToken(value: string): NewLineToken {
     return {
       type: 'newline',
-      format: 'default',
       value
     };
   }
 
-  public static CreateHashTagToken(value: string): HashTagToken {
+  public static CreateHashTagToken(value: string, formats?: TokenFormat[]): HashTagToken {
     return {
       type: 'hashtag',
-      format: 'default',
-      value
+      value,
+      ...(formats && { formats })
     };
   }
 }

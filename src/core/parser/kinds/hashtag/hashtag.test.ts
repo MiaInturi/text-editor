@@ -20,7 +20,6 @@ describe('Hashtag parse', () => {
     const expectedTokens: Token[] = [
       {
         type: 'hashtag',
-        format: 'default',
         value: '#TextWithHashtag'
       }
     ];
@@ -35,12 +34,10 @@ describe('Hashtag parse', () => {
     const expectedTokens: Token[] = [
       {
         type: 'hashtag',
-        format: 'default',
         value: '#Text'
       },
       {
         type: 'hashtag',
-        format: 'default',
         value: '#WithTwoHashtags'
       }
     ];

@@ -1,47 +1,57 @@
 import { Tokens } from './tokens';
 
-describe('Tokens class', () => {
-  test('createTextToken without format', () => {
-    const textToken = Tokens.CreateTextToken('value');
+describe('Tokens class: creating tokens', () => {
+  test('Create Text Token without formats', () => {
+    const text = 'text';
+    const textToken = Tokens.CreateTextToken(text);
     const expectedTextToken: TextToken = {
       type: 'text',
-      format: 'default',
-      value: 'value'
+      value: text
     };
-
     expect(textToken).toStrictEqual(expectedTextToken);
   });
 
-  test('createTextToken with bold format', () => {
-    const textToken = Tokens.CreateTextToken('value', 'bold');
+  test('Create Text Token with formats', () => {
+    const text = 'text';
+    const formats: TokenFormat[] = ['bold', 'italic'];
+    const textToken = Tokens.CreateTextToken(text, formats);
     const expectedTextToken: TextToken = {
       type: 'text',
-      format: 'bold',
-      value: 'value'
+      value: text,
+      formats
     };
-
     expect(textToken).toStrictEqual(expectedTextToken);
   });
 
-  test('createTextToken with italic format', () => {
-    const textToken = Tokens.CreateTextToken('value', 'italic');
-    const expectedTextToken: TextToken = {
-      type: 'text',
-      format: 'italic',
-      value: 'value'
-    };
-
-    expect(textToken).toStrictEqual(expectedTextToken);
-  });
-
-  test('createNewLineToken', () => {
-    const newLineToken = Tokens.CreateNewLineToken('\n');
+  test('Create NewLine Token without formats', () => {
+    const newLine = '\n';
+    const newLineToken = Tokens.CreateNewLineToken(newLine);
     const expectedNewLineToken: NewLineToken = {
       type: 'newline',
-      format: 'default',
-      value: '\n'
+      value: newLine
     };
-
     expect(newLineToken).toStrictEqual(expectedNewLineToken);
+  });
+
+  test('Create HashTag Token without formats', () => {
+    const hashTag = '#hashtag';
+    const hashTagToken = Tokens.CreateHashTagToken(hashTag);
+    const expectedHashTagToken: HashTagToken = {
+      type: 'hashtag',
+      value: hashTag
+    };
+    expect(hashTagToken).toStrictEqual(expectedHashTagToken);
+  });
+
+  test('Create HashTag Token with formats', () => {
+    const hashTag = '#hashtag';
+    const formats: TokenFormat[] = ['bold', 'italic'];
+    const hashTagToken = Tokens.CreateHashTagToken(hashTag, formats);
+    const expectedHashTagToken: HashTagToken = {
+      type: 'hashtag',
+      value: hashTag,
+      formats
+    };
+    expect(hashTagToken).toStrictEqual(expectedHashTagToken);
   });
 });
