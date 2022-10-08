@@ -1,5 +1,4 @@
 type TokenType = 'text' | 'newline' | 'hashtag';
-
 type TokenFormat = 'bold' | 'italic';
 
 interface TokenBase {

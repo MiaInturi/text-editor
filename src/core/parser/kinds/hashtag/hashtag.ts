@@ -1,9 +1,9 @@
 import type { Parser } from '@core/parser/parser';
-import { Tokens } from '@core/tokens/tokens';
+import { Model } from '@core/model/model';
 import { isHashTagName } from '@core/parser/utils/helpers/hashtag';
 import { last } from '@utils/helpers/array';
 import { UNICODE_CODES } from '@core/parser/utils/constants';
-import { TOKEN_TYPE } from '@core/tokens/utils/constants';
+import { TOKEN_TYPE } from '@core/model/utils/constants';
 
 const isHashTagBound = (parser: Parser): boolean => {
   if (parser.isTextWordBound()) return true;
@@ -33,7 +33,7 @@ export const parseHashTag = (parser: Parser): boolean => {
   if (consumeHashTag(parser)) {
     const positionAfterConsumeHashTag = parser.tell();
     const hashTagValue = parser.getTextFragment(positionBeforeConsumeHashTag, positionAfterConsumeHashTag);
-    parser.addToken(Tokens.CreateHashTagToken(hashTagValue));
+    parser.addToken(Model.CreateHashTagToken(hashTagValue));
     return true;
   }
   // ✅ important:

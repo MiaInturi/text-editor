@@ -1,21 +1,21 @@
 import { parseHashTag } from '@core/parser/kinds/hashtag/hashtag';
 import { parseNewLine } from '@core/parser/kinds/newline/newline';
 import { parseText } from '@core/parser/kinds/text/text';
-import { Tokens } from '@core/tokens/tokens';
+import { Model } from '@core/model/model';
 import { isDelimiter } from '@core/parser/utils/helpers/shared';
 import { last } from '@utils/helpers/array';
 import { UTF16_UTIL } from '@core/parser/utils/constants';
-import { TOKEN_TYPE } from '@core/tokens/utils/constants';
+import { TOKEN_TYPE } from '@core/model/utils/constants';
 
 export class Parser {
   private readonly text: string;
-  private position: number;
+  private position: Position;
 
   private tokens: Token[] = [];
   private textFragmentStartPos: number = -1;
   private textFragmentEndPos: number = -1;
 
-  public constructor(text: string, position: number = 0) {
+  public constructor(text: string, position: Position = 0) {
     if (position > text.length) throw new Error('Position cannot be greater than text length');
     this.text = text;
     this.position = position;
@@ -24,11 +24,11 @@ export class Parser {
   /*
   Work with code points and position
    */
-  public tell(): number {
+  public tell(): Position {
     return this.position;
   }
 
-  public seek(position: number): void {
+  public seek(position: Position): void {
     if (position > this.text.length) throw new Error('Position cannot be greater than text length');
     this.position = position;
   }
@@ -83,7 +83,7 @@ export class Parser {
     const textForToken = this.text.substring(this.textFragmentStartPos, this.textFragmentEndPos);
     this.textFragmentStartPos = -1;
     this.textFragmentEndPos = -1;
-    this.tokens.push(Tokens.CreateTextToken(textForToken));
+    this.tokens.push(Model.CreateTextToken(textForToken));
   }
 
   public addToken(token: Token): void {
