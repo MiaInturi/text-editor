@@ -2,9 +2,9 @@ import { parseHashTag } from '@core/parser/kinds/hashtag/hashtag';
 import { parseNewLine } from '@core/parser/kinds/newline/newline';
 import { parseText } from '@core/parser/kinds/text/text';
 import { Model } from '@core/model/model';
+import { resolveNextCodePointUnitCount, resolvePrevCodePointUnitCount } from '@core/parser/utils/helpers/unicode';
 import { isDelimiter } from '@core/parser/utils/helpers/shared';
 import { last } from '@utils/helpers/array';
-import { UTF16_UTIL } from '@core/parser/utils/constants';
 import { TOKEN_TYPE } from '@core/model/utils/constants';
 
 export class Parser {
@@ -49,8 +49,7 @@ export class Parser {
     // If prev index code point in special range (from 0xDC00 to 0xDFFF)
     // then codePoint contains high and low surrogates
     const prevIndexCodePoint = this.text.codePointAt(this.position - 1)!;
-    const isPrevIndexCodePointContainsHighAndLowSurrogates = prevIndexCodePoint >= UTF16_UTIL.LOW_SURROGATE_MIN_VALUE && prevIndexCodePoint <= UTF16_UTIL.LOW_SURROGATE_MAX_VALUE;
-    const positionShift = isPrevIndexCodePointContainsHighAndLowSurrogates ? UTF16_UTIL.MAX_UNIT_COUNT : UTF16_UTIL.MIN_UNIT_COUNT;
+    const positionShift = resolvePrevCodePointUnitCount(prevIndexCodePoint);
     return this.text.codePointAt(this.position - positionShift);
   }
 
@@ -67,8 +66,7 @@ export class Parser {
     // Calculate units that needed for codePoint
     // because String.length property equals to units count in string
     const nextCodePoint = this.text.codePointAt(this.position)!;
-    const isCodePointContainsHighAndLowSurrogates = nextCodePoint > UTF16_UTIL.UNIT_MAX_VALUE;
-    const positionShift = isCodePointContainsHighAndLowSurrogates ? UTF16_UTIL.MAX_UNIT_COUNT : UTF16_UTIL.MIN_UNIT_COUNT;
+    const positionShift = resolveNextCodePointUnitCount(nextCodePoint);
     this.seek(this.position + positionShift);
     return nextCodePoint;
   }
@@ -133,8 +131,7 @@ export class Parser {
     if (!this.position) return true;
     if (this.isTextConsuming()) return isDelimiter(this.checkPrev() ?? NaN);
 
-    const lastTokenType = last(this.model.getTokens())?.type;
-    return lastTokenType === TOKEN_TYPE.NEWLINE;
+    return last(this.model.getTokens())?.type === TOKEN_TYPE.NEWLINE;
   }
 
   public isTextConsuming(): boolean {
