@@ -1,5 +1,5 @@
 import type { Parser } from '@core/parser/parser';
-import { Tokens } from '@core/tokens/tokens';
+import { Model } from '@core/model/model';
 import { UNICODE_CODES } from '@core/parser/utils/constants';
 
 const consumeNewLine = (parser: Parser): boolean => {
@@ -17,7 +17,7 @@ export const parseNewLine = (parser: Parser): boolean => {
   if (consumeNewLine(parser)) {
     const positionAfterConsumeNewLine = parser.tell();
     const newLineValue = parser.getTextFragment(positionBeforeConsumeNewLine, positionAfterConsumeNewLine);
-    parser.addToken(Tokens.CreateNewLineToken(newLineValue));
+    parser.pushToken(Model.CreateNewLineToken(newLineValue));
     return true;
   }
   return false;

@@ -13,7 +13,6 @@ type TokenFormatConstants = {
 };
 
 export const TOKEN_FORMAT: TokenFormatConstants = {
-  DEFAULT: 'default',
   BOLD: 'bold',
   ITALIC: 'italic'
 };

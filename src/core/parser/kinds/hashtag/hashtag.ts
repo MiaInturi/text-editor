@@ -1,26 +1,21 @@
 import type { Parser } from '@core/parser/parser';
-import { Tokens } from '@core/tokens/tokens';
+import { Model } from '@core/model/model';
 import { isHashTagName } from '@core/parser/utils/helpers/hashtag';
 import { last } from '@utils/helpers/array';
 import { UNICODE_CODES } from '@core/parser/utils/constants';
-import { TOKEN_TYPE } from '@core/tokens/utils/constants';
+import { TOKEN_TYPE } from '@core/model/utils/constants';
 
-const isHashTagBound = (parser: Parser): boolean => {
-  if (parser.isTextWordBound()) return true;
-
+const isHashTagBound = (parser: Parser, model: Model): boolean => {
   // ✅ important:
   // Hashtags can be concatenated
-  if (!parser.isTextConsuming()) {
-    const tokens = parser.getTokens();
-    const lastTokenType = last(tokens)?.type;
-    return lastTokenType === TOKEN_TYPE.HASHTAG;
-  }
+  if (parser.isTextWordBound()) return true;
+  if (!parser.isTextConsuming()) return last(model.getTokens())?.type === TOKEN_TYPE.HASHTAG;
 
   return false;
 };
 
-const consumeHashTag = (parser: Parser): boolean => {
-  if (isHashTagBound(parser)) {
+const consumeHashTag = (parser: Parser, model: Model): boolean => {
+  if (isHashTagBound(parser, model)) {
     const isHashTagWasSuccessfullyConsumed = parser.consumeSpecialSymbol(UNICODE_CODES.HASHTAG);
     const isHashTagNameWasSuccessfullyConsumed = parser.consumeSpecialSymbolWhile(isHashTagName);
     return isHashTagWasSuccessfullyConsumed && isHashTagNameWasSuccessfullyConsumed;
@@ -28,12 +23,12 @@ const consumeHashTag = (parser: Parser): boolean => {
   return false;
 };
 
-export const parseHashTag = (parser: Parser): boolean => {
+export const parseHashTag = (parser: Parser, model: Model): boolean => {
   const positionBeforeConsumeHashTag = parser.tell();
-  if (consumeHashTag(parser)) {
+  if (consumeHashTag(parser, model)) {
     const positionAfterConsumeHashTag = parser.tell();
     const hashTagValue = parser.getTextFragment(positionBeforeConsumeHashTag, positionAfterConsumeHashTag);
-    parser.addToken(Tokens.CreateHashTagToken(hashTagValue));
+    parser.pushToken(Model.CreateHashTagToken(hashTagValue));
     return true;
   }
   // ✅ important:

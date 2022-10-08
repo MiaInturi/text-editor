@@ -16,8 +16,8 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
+      "@core/model/*": ["src/core/model/*"],
       "@core/parser/*": ["src/core/parser/*"],
-      "@core/tokens/*": ["src/core/tokens/*"],
       "@utils/*": ["src/utils/*"]
     }
   },
