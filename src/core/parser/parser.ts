@@ -8,15 +8,17 @@ import { UTF16_UTIL } from '@core/parser/utils/constants';
 import { TOKEN_TYPE } from '@core/model/utils/constants';
 
 export class Parser {
+  private readonly model: Model;
   private readonly text: string;
   private position: Position;
 
-  private tokens: Token[] = [];
+  private readonly parseFunctions = [parseHashTag, parseNewLine, parseText];
   private textFragmentStartPos: number = -1;
   private textFragmentEndPos: number = -1;
 
-  public constructor(text: string, position: Position = 0) {
+  public constructor(model: Model, text: string, position: Position = 0) {
     if (position > text.length) throw new Error('Position cannot be greater than text length');
+    this.model = model;
     this.text = text;
     this.position = position;
   }
@@ -83,18 +85,14 @@ export class Parser {
     const textForToken = this.text.substring(this.textFragmentStartPos, this.textFragmentEndPos);
     this.textFragmentStartPos = -1;
     this.textFragmentEndPos = -1;
-    this.tokens.push(Model.CreateTextToken(textForToken));
+    this.model.pushToken(Model.CreateTextToken(textForToken));
   }
 
-  public addToken(token: Token): void {
+  public pushToken(token: Token): void {
     // ✅ important:
     // Call 'flush' for save text and chronological order before add new token
     this.flushTokens();
-    this.tokens.push(token);
-  }
-
-  public getTokens(): Token[] {
-    return this.tokens;
+    this.model.pushToken(token);
   }
 
   /*
@@ -135,7 +133,7 @@ export class Parser {
     if (!this.position) return true;
     if (this.isTextConsuming()) return isDelimiter(this.checkPrev() ?? NaN);
 
-    const lastTokenType = last(this.tokens)?.type;
+    const lastTokenType = last(this.model.getTokens())?.type;
     return lastTokenType === TOKEN_TYPE.NEWLINE;
   }
 
@@ -156,17 +154,15 @@ export class Parser {
     this.textFragmentEndPos = this.position;
   }
 
-  public parse(): Token[] {
-    const parseFunctions = [parseHashTag, parseNewLine, parseText];
+  public parse(): void {
     while (this.isHasNext()) {
       // ✅ important:
       // All functions should return 'boolean' for indicate of consume success/fail
       // array method 'some' will stop as soon as some of 'parseFunctions' return 'true'
-      parseFunctions.some((parseFunction) => parseFunction(this));
+      this.parseFunctions.some((parseFunction) => parseFunction(this, this.model));
     }
     // ✅ important:
     // Need to flush before end of parse for handle case when text token in the end 'text'
     this.flushTokens();
-    return this.getTokens();
   }
 }
