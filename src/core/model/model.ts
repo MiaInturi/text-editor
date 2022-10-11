@@ -26,7 +26,7 @@ export class Model {
     return {
       type: 'text',
       value,
-      ...(formats && { formats })
+      formats: formats ?? []
     };
   }
 
@@ -41,7 +41,7 @@ export class Model {
     return {
       type: 'hashtag',
       value,
-      ...(formats && { formats })
+      formats: formats ?? []
     };
   }
 }

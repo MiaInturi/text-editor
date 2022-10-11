@@ -21,7 +21,7 @@ describe('Hashtag parse', () => {
     const model = new Model();
     const text = '#TextWithHashtag';
     const parser = new Parser(model, text);
-    const expectedTokens: Token[] = [{ type: 'hashtag', value: '#TextWithHashtag' }];
+    const expectedTokens: Token[] = [Model.CreateHashTagToken('#TextWithHashtag')];
 
     expect(parseHashTag(parser, model)).toBe(true);
     expect(model.getTokens()).toStrictEqual(expectedTokens);
@@ -31,10 +31,7 @@ describe('Hashtag parse', () => {
     const model = new Model();
     const text = '#Text#WithTwoHashtags';
     const parser = new Parser(model, text);
-    const expectedTokens: Token[] = [
-      { type: 'hashtag', value: '#Text' },
-      { type: 'hashtag', value: '#WithTwoHashtags' }
-    ];
+    const expectedTokens: Token[] = [Model.CreateHashTagToken('#Text'), Model.CreateHashTagToken('#WithTwoHashtags')];
 
     expect(parseHashTag(parser, model)).toBe(true);
     expect(parseHashTag(parser, model)).toBe(true);

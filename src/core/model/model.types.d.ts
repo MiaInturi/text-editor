@@ -4,18 +4,21 @@ type TokenFormat = 'bold' | 'italic';
 interface TokenBase {
   type: TokenType;
   value: string;
-  formats?: TokenFormat[];
 }
 
-interface TextToken extends TokenBase {
+interface FormattableTokenBase extends TokenBase {
+  formats: TokenFormat[];
+}
+
+interface TextToken extends FormattableTokenBase {
   type: Extract<TokenType, 'text'>;
 }
 
-interface NewLineToken extends Omit<TokenBase, 'formats'> {
+interface NewLineToken extends TokenBase {
   type: Extract<TokenType, 'newline'>;
 }
 
-interface HashTagToken extends TokenBase {
+interface HashTagToken extends FormattableTokenBase {
   type: Extract<TokenType, 'hashtag'>;
 }
 
