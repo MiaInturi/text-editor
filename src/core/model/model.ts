@@ -13,7 +13,7 @@ export class Model {
     this.tokens = tokens;
   }
 
-  public getToken(index: number): Token | undefined {
+  public getToken(index: Index): Token | undefined {
     return this.tokens[index];
   }
 

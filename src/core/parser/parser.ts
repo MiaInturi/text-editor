@@ -13,8 +13,8 @@ export class Parser {
   private position: Position;
 
   private readonly parseFunctions = [parseHashTag, parseNewLine, parseText];
-  private textFragmentStartPos: number = -1;
-  private textFragmentEndPos: number = -1;
+  private textFragmentStartPos: Index = -1;
+  private textFragmentEndPos: Index = -1;
 
   public constructor(model: Model, text: string, position: Position = 0) {
     if (position > text.length) throw new Error('Position cannot be greater than text length');
@@ -138,7 +138,7 @@ export class Parser {
     return this.textFragmentStartPos !== this.textFragmentEndPos;
   }
 
-  public getTextFragment(from: number, to: number): string {
+  public getTextFragment(from: Index, to: Index): string {
     return this.text.substring(from, to);
   }
 

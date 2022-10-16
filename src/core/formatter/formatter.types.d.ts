@@ -4,7 +4,7 @@ interface Range {
 }
 
 interface RangeEdgeLocation {
-  index: number;
+  index: Index;
   offset: number;
 }
 
@@ -15,5 +15,5 @@ interface RangeLocation {
 
 interface SplittedTokensByRangeLocation {
   splittedTokens: Token[];
-  formattableSlice: { start: number; end: number; };
+  formattableSlice: { start: Index; end: Index; };
 }
