@@ -1,2 +1,2 @@
-export * from './resolveRangeEdgeLocation';
-export * from './resolveTokensFullLength';
+export * from './resolveRangeEdgeLocation/resolveRangeEdgeLocation';
+export * from './resolveTokensFullLength/resolveTokensFullLength';

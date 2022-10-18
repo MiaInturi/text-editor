@@ -1,3 +1,3 @@
-export * from './isTokenFormattable';
-export * from './isTokenSplittableByPosition';
-export * from './splitTokenByPosition';
+export * from './isTokenFormattable/isTokenFormattable';
+export * from './isTokenSplittableByPosition/isTokenSplittableByPosition';
+export * from './splitTokenByPosition/splitTokenByPosition';

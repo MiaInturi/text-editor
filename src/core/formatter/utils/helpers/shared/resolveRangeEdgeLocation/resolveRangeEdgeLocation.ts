@@ -2,7 +2,7 @@ const isPositionReached = (targetPosition: Position, currentPosition: Position, 
   includeEdge ? (targetPosition <= currentPosition) : (targetPosition < currentPosition)
 );
 
-export const resolveRangeEdgeLocation = (tokens: Token[], targetPosition: Position, isIncludeEdge: boolean): RangeEdgeLocation => {
+export const resolveRangeEdgeLocation = (tokens: Token[], targetPosition: Position, isIncludeEndEdge: boolean): RangeEdgeLocation => {
   let currentIndex = 0;
   let currentPosition = 0;
 
@@ -10,7 +10,7 @@ export const resolveRangeEdgeLocation = (tokens: Token[], targetPosition: Positi
     const token = tokens[currentIndex];
     currentPosition += token.value.length;
 
-    if (isPositionReached(targetPosition, currentPosition, isIncludeEdge)) {
+    if (isPositionReached(targetPosition, currentPosition, isIncludeEndEdge)) {
       const tokenRangeLocationIndex = currentIndex;
       const tokenRangeLocationOffset = targetPosition - (currentPosition - token.value.length);
       return { index: tokenRangeLocationIndex, offset: tokenRangeLocationOffset };
