@@ -17,3 +17,5 @@ interface SplittedTokensByRangeLocation {
   splittedTokens: Token[];
   formattableSlice: { start: Index; end: Index; };
 }
+
+type SplittedTokenArrayRepresentation = [Token] | [Token, Token];

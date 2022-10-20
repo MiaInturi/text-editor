@@ -1,6 +1,6 @@
 import type { Model } from '@core/model/model';
 import { isTokenFormattable, isTokenSplittableByPosition, splitTokenByPosition } from '@core/formatter/utils/helpers/format';
-import { resolveRangeEdgeLocation, resolveTokensFullLength } from '@core/formatter/utils/helpers/shared';
+import { resolveFormattableSliceShift, resolveRangeEdgeLocation, resolveTokensFullLength } from '@core/formatter/utils/helpers/shared';
 import { addUniqueValueIntoArray, first, last } from '@utils/helpers/array';
 
 export class Formatter {
@@ -10,15 +10,15 @@ export class Formatter {
     this.model = model;
   }
 
-  public format(format: TokenFormat, range: Range): void {
-    if (!this.isRangeValidForFormatting(range)) return;
+  public format(format: TokenFormat, range: Range): Token[] {
+    if (!this.isRangeValidForFormatting(range)) throw new Error('Range \'to\' - \'from\' is invalid');
 
     const rangeLocation = this.resolveRangeLocation(range);
     const { splittedTokens, formattableSlice } = this.splitTokens(rangeLocation);
 
     const formattableTokens = splittedTokens.slice(formattableSlice.start, formattableSlice.end);
     const formattedTokens = this.applyFormatToTokens(formattableTokens, format);
-    this.insertFormattedTokens(formattedTokens, rangeLocation);
+    return this.insertFormattedTokens(formattedTokens, rangeLocation);
   }
 
   private isRangeValidForFormatting({ from, to }: Range): boolean {
@@ -44,20 +44,19 @@ export class Formatter {
 
     const isFirstTokenSplittable = isTokenSplittableByPosition(firstTokenInRangeLocation, start.offset);
     const isLastTokenSplittable = isTokenSplittableByPosition(lastTokenInRangeLocation, end.offset);
-    const firstTokenArrayRepresentation = isFirstTokenSplittable ? splitTokenByPosition(firstTokenInRangeLocation, start.offset) : [firstTokenInRangeLocation];
-    const lastTokenArrayRepresentation = isLastTokenSplittable ? splitTokenByPosition(lastTokenInRangeLocation, end.offset) : [lastTokenInRangeLocation];
+    const firstTokenArrayRepresentation: SplittedTokenArrayRepresentation =
+      isFirstTokenSplittable
+        ? splitTokenByPosition(firstTokenInRangeLocation, start.offset)
+        : [firstTokenInRangeLocation];
+    const lastTokenArrayRepresentation: SplittedTokenArrayRepresentation =
+      isLastTokenSplittable
+        ? splitTokenByPosition(lastTokenInRangeLocation, end.offset)
+        : [lastTokenInRangeLocation];
 
     // ✅ important:
     // 'formattableSlice' tells start to end indexes where need to apply format
-    const splittedTokens = [
-      ...firstTokenArrayRepresentation,
-      ...tokensInRangeLocation.slice(1, -1),
-      ...lastTokenArrayRepresentation
-    ];
-    const formattableSlice = {
-      start: isFirstTokenSplittable ? 1 : 0,
-      end: isLastTokenSplittable ? splittedTokens.length - 1 : splittedTokens.length
-    };
+    const splittedTokens = [...firstTokenArrayRepresentation, ...tokensInRangeLocation.slice(1, -1), ...lastTokenArrayRepresentation];
+    const formattableSlice = { start: resolveFormattableSliceShift(firstTokenArrayRepresentation), end: splittedTokens.length - resolveFormattableSliceShift(lastTokenArrayRepresentation) };
     return { splittedTokens, formattableSlice };
   }
 
@@ -76,10 +75,10 @@ export class Formatter {
     });
   }
 
-  private insertFormattedTokens(tokens: Token[], { start, end }: RangeLocation): void {
+  private insertFormattedTokens(formattedTokens: Token[], { start, end }: RangeLocation): Token[] {
     const originalTokens = this.model.getTokens();
     const beforeFormattedTokens = originalTokens.slice(0, start.index);
     const afterFormattedTokens = originalTokens.slice(end.index + 1);
-    this.model.setTokens( [...beforeFormattedTokens, ...tokens, ...afterFormattedTokens]);
+    return [...beforeFormattedTokens, ...formattedTokens, ...afterFormattedTokens];
   }
 }
