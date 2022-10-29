@@ -1,21 +1,14 @@
-interface Range {
+interface FormatRange {
   from: Position;
   to: Position;
 }
 
-interface RangeEdgeLocation {
+interface FormatRangeEdgeLocation {
   index: Index;
   offset: number;
 }
 
-interface RangeLocation {
-  start: RangeEdgeLocation;
-  end: RangeEdgeLocation;
+interface FormatRangeLocation {
+  start: FormatRangeEdgeLocation;
+  end: FormatRangeEdgeLocation;
 }
-
-interface SplittedTokensByRangeLocation {
-  splittedTokens: Token[];
-  formattableSlice: { start: Index; end: Index; };
-}
-
-type SplittedTokenArrayRepresentation = [Token] | [Token, Token];

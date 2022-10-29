@@ -2,7 +2,7 @@ const isPositionReached = (targetPosition: Position, currentPosition: Position, 
   includeEdge ? (targetPosition <= currentPosition) : (targetPosition < currentPosition)
 );
 
-export const resolveRangeEdgeLocation = (tokens: Token[], targetPosition: Position, isIncludeEndEdge: boolean): RangeEdgeLocation => {
+export const resolveRangeEdgeLocation = (tokens: Token[], targetPosition: Position, isIncludeEndEdge: boolean): FormatRangeEdgeLocation => {
   let currentIndex = 0;
   let currentPosition = 0;
 
