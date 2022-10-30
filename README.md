@@ -2,7 +2,7 @@
 Text Editor by MiaInturi
 </h1>
 
-## 🤔 What's project about
+## 🎓 What's project about
 
 As the name suggests, a *Text Editor* is a front-end project, which is a website where users can edit texts and return to them as needed. 
 All business logic of the project was implemented without the use of third-party libraries.

@@ -16,6 +16,7 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
+      "@core/formatter/*": ["src/core/formatter/*"],
       "@core/model/*": ["src/core/model/*"],
       "@core/parser/*": ["src/core/parser/*"],
       "@utils/*": ["src/utils/*"]

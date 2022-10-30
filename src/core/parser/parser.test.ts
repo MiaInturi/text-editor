@@ -54,7 +54,7 @@ describe('Parser class: add, get, flush tokens', () => {
     const model = new Model();
     const text = 'text';
     const parser = new Parser(model, 'text');
-    const expectedTokens: Token[] = [{ type: 'text', value: text.substring(0, 1) }];
+    const expectedTokens: Token[] = [Model.CreateTextToken(text.substring(0, 1))];
 
     parser.consumeText();
     parser.flushTokens();
@@ -66,14 +66,8 @@ describe('Parser class: add, get, flush tokens', () => {
     const text = 'text';
     const parser = new Parser(model, text);
 
-    const tokenForAdd: Token = {
-      type: 'hashtag',
-      value: '#hashtag'
-    };
-    const expectedTokens: Token[] = [
-      { type: 'text', value: text.substring(0, 1) },
-      { type: 'hashtag', value: '#hashtag' }
-    ];
+    const tokenForAdd: Token = Model.CreateHashTagToken('#hashtag');
+    const expectedTokens: Token[] = [Model.CreateTextToken(text.substring(0, 1)), Model.CreateHashTagToken('#hashtag')];
 
     parser.consumeText();
     parser.pushToken(tokenForAdd);
@@ -177,7 +171,7 @@ describe('Parser class: text word bound check', () => {
     const model = new Model();
     const text = 'text';
     const parser = new Parser(model, text, text.length);
-    parser.pushToken({ type: 'hashtag', value: '#hashtag' });
+    parser.pushToken(Model.CreateHashTagToken('#hashtag'));
     expect(parser.isTextWordBound()).toBe(false);
   });
 
@@ -185,7 +179,7 @@ describe('Parser class: text word bound check', () => {
     const model = new Model();
     const text = 'text';
     const parser = new Parser(model, text);
-    parser.pushToken({ type: 'newline', value: '\n' });
+    parser.pushToken(Model.CreateNewLineToken('\n'));
     expect(parser.isTextWordBound()).toBe(true);
   });
 });

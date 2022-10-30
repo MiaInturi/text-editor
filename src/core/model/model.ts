@@ -13,7 +13,7 @@ export class Model {
     this.tokens = tokens;
   }
 
-  public getToken(index: number): Token | undefined {
+  public getToken(index: Index): Token | undefined {
     return this.tokens[index];
   }
 
@@ -26,7 +26,7 @@ export class Model {
     return {
       type: 'text',
       value,
-      ...(formats && { formats })
+      formats: formats ?? []
     };
   }
 
@@ -41,7 +41,7 @@ export class Model {
     return {
       type: 'hashtag',
       value,
-      ...(formats && { formats })
+      formats: formats ?? []
     };
   }
 }
