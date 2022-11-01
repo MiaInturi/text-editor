@@ -53,7 +53,7 @@ export class Formatter {
 
     // ✅ important:
     // Filter tokens with empty value, because that tokens created when start or end on the edge of 'token'
-    const formattedTokens = this.applyFormatToTokens([ formattable ], format);
+    const formattedTokens = this.applyFormatToTokens([formattable], format);
     const splittedTokens = [splittedStart, ...formattedTokens, splittedEnd];
     return splittedTokens.filter((splittedToken) => splittedToken.value);
   }

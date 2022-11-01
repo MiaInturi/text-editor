@@ -23,9 +23,19 @@ export class Parser {
     this.position = position;
   }
 
-  /*
-  Work with code points and position
-   */
+  public parse(): void {
+    while (this.isHasNext()) {
+      // ✅ important:
+      // All functions should return 'boolean' for indicate of consume success/fail
+      // array method 'some' will stop as soon as some of 'parseFunctions' return 'true'
+      this.parseFunctions.some((parseFunction) => parseFunction(this, this.model));
+    }
+    // ✅ important:
+    // Need to flush before end of parse for handle case when text token in the end 'text'
+    this.flushTokens();
+  }
+
+
   public tell(): Position {
     return this.position;
   }
@@ -71,9 +81,7 @@ export class Parser {
     return nextCodePoint;
   }
   
-  /*
-  Work with tokens
-   */
+
   public flushTokens(): void {
     // ✅ important:
     // Need to push text token into 'tokens' only if we are in the middle of a parsing process
@@ -93,9 +101,7 @@ export class Parser {
     this.model.pushToken(token);
   }
 
-  /*
-  Work with consuming special symbols
-   */
+
   public consumeSpecialSymbol(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
     const codePoint = this.checkNext();
     if (!codePoint) return false;
@@ -124,9 +130,7 @@ export class Parser {
     return positionBeforeConsumeWhile !== positionAfterConsumeWhile;
   }
 
-  /*
-  Work with text
-   */
+
   public isTextWordBound(): boolean {
     if (!this.position) return true;
     if (this.isTextConsuming()) return isDelimiter(this.checkPrev() ?? NaN);
@@ -149,17 +153,5 @@ export class Parser {
     }
     this.selectNext();
     this.textFragmentEndPos = this.position;
-  }
-
-  public parse(): void {
-    while (this.isHasNext()) {
-      // ✅ important:
-      // All functions should return 'boolean' for indicate of consume success/fail
-      // array method 'some' will stop as soon as some of 'parseFunctions' return 'true'
-      this.parseFunctions.some((parseFunction) => parseFunction(this, this.model));
-    }
-    // ✅ important:
-    // Need to flush before end of parse for handle case when text token in the end 'text'
-    this.flushTokens();
   }
 }

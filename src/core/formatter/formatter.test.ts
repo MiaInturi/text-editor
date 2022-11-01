@@ -1,6 +1,7 @@
 import { Model } from '@core/model/model';
 import { Formatter } from '@core/formatter/formatter';
 import { isTokenFormattable } from '@core/formatter/utils/helpers/format';
+import { cloneToken } from '@core/model/utils/helpers/shared';
 import { TOKEN_FORMAT } from '@core/model/utils/constants';
 
 describe('Formatter class: format', () => {
@@ -38,7 +39,7 @@ describe('Formatter class: format', () => {
 
     const format = TOKEN_FORMAT.BOLD;
     const range: FormatRange = { from: 1, to: 3 };
-    const expectedTokens: Token[] = [{ ...token, formats: [format] }];
+    const expectedTokens: Token[] = [{ ...cloneToken(token), formats: [format] }];
     expect(formatter.format(format, range)).toStrictEqual(expectedTokens);
   });
 
@@ -48,7 +49,7 @@ describe('Formatter class: format', () => {
 
     const format = TOKEN_FORMAT.BOLD;
     const range: FormatRange = { from: 0, to: 1 };
-    const expectedTokens: Token[] = [{ ...token }];
+    const expectedTokens: Token[] = [cloneToken(token)];
     expect(formatter.format(format, range)).toStrictEqual(expectedTokens);
   });
 
@@ -82,7 +83,7 @@ describe('Formatter class: format', () => {
 
     const format = TOKEN_FORMAT.BOLD;
     const range: FormatRange = { from: 2, to: 14 };
-    const expectedTokens: Token[] = tokens.map((token) => ({ ...token, formats: [format] }));
+    const expectedTokens: Token[] = tokens.map((token) => ({ ...cloneToken(token), formats: [format] }));
     expect(formatter.format(format, range)).toStrictEqual(expectedTokens);
   });
 
@@ -96,7 +97,7 @@ describe('Formatter class: format', () => {
 
     const format = TOKEN_FORMAT.BOLD;
     const range: FormatRange = { from: 0, to: 6 };
-    const expectedTokens: Token[] = tokens.map((token) => isTokenFormattable(token) ? { ...token, formats: [format] } : { ...token });
+    const expectedTokens: Token[] = tokens.map((token) => isTokenFormattable(token) ? { ...cloneToken(token), formats: [format] } : cloneToken(token));
     expect(formatter.format(format, range)).toStrictEqual(expectedTokens);
   });
 
