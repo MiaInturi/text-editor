@@ -4,46 +4,41 @@ import { resolveRangeEdgeLocation, resolveTokensFullLength } from '@core/formatt
 import { first, last } from '@utils/helpers/array';
 
 export class Formatter {
-  private readonly model: Model;
+  public format(model: Model, format: TokenFormat, range: FormatRange): Token[] {
+    const originalTokens = model.getTokens();
+    if (!this.isRangeValidForFormatting(originalTokens, range)) throw new Error('Range \'to\' - \'from\' is invalid');
 
-  public constructor(model: Model) {
-    this.model = model;
+    const rangeLocation = this.resolveRangeLocation(originalTokens, range);
+    const formattedTokens = this.setFormat(originalTokens, format, rangeLocation);
+    return this.insertFormattedTokens(originalTokens, formattedTokens, rangeLocation);
   }
 
-  public format(format: TokenFormat, range: FormatRange): Token[] {
-    if (!this.isRangeValidForFormatting(range)) throw new Error('Range \'to\' - \'from\' is invalid');
-
-    const rangeLocation = this.resolveRangeLocation(range);
-    const formattedTokens = this.setFormat(rangeLocation, format);
-    return this.insertFormattedTokens(formattedTokens, rangeLocation);
-  }
-
-  private isRangeValidForFormatting({ from, to }: FormatRange): boolean {
-    const tokens = this.model.getTokens();
+  private isRangeValidForFormatting(tokens: Token[], { from, to }: FormatRange): boolean {
     const tokensFullLength = resolveTokensFullLength(tokens);
-
     if (from >= to) return false;
     if (from > tokensFullLength || to > tokensFullLength) return false;
     return true;
   }
 
-  private resolveRangeLocation({ from, to }: FormatRange): FormatRangeLocation {
-    const tokens = this.model.getTokens();
+  private resolveRangeLocation(tokens: Token[], { from, to }: FormatRange): FormatRangeLocation {
     const startRangeEdgeLocation = resolveRangeEdgeLocation(tokens, from, false);
     const endRangeEdgeLocation = resolveRangeEdgeLocation(tokens, to, true);
     return { start: startRangeEdgeLocation, end: endRangeEdgeLocation };
   }
 
-  private setFormat(rangeLocation: FormatRangeLocation, format: TokenFormat): Token[] {
+  private setFormat(originalTokens: Token[], format: TokenFormat, rangeLocation: FormatRangeLocation): Token[] {
     const { start, end } = rangeLocation;
     const isOnlyOneTokenInRange = start.index === end.index;
-    return isOnlyOneTokenInRange ? this.setFormatToSingleToken(rangeLocation, format) : this.setFormatToMultipleTokens(rangeLocation, format);
+
+    return isOnlyOneTokenInRange
+      ? this.setFormatToSingleToken(originalTokens, format, rangeLocation)
+      : this.setFormatToMultipleTokens(originalTokens, format, rangeLocation);
   }
 
-  private setFormatToSingleToken({ start, end }: FormatRangeLocation, format: TokenFormat): Token[] {
+  private setFormatToSingleToken(originalTokens: Token[], format: TokenFormat, { start, end }: FormatRangeLocation): Token[] {
     // ✅ important:
     // If token not splittable call 'splitTokenByPosition' with edges offset for getting all token as 'formattable'
-    const singleToken = this.model.getTokens()[start.index];
+    const singleToken = originalTokens[start.index];
     const isSingleTokenSplittable = isTokenSplittable(singleToken);
 
     const calculatedStartOffset = isSingleTokenSplittable ? start.offset : 0;
@@ -58,10 +53,10 @@ export class Formatter {
     return splittedTokens.filter((splittedToken) => splittedToken.value);
   }
 
-  private setFormatToMultipleTokens({ start, end }: FormatRangeLocation, format: TokenFormat): Token[] {
+  private setFormatToMultipleTokens(originalTokens: Token[], format: TokenFormat, { start, end }: FormatRangeLocation): Token[] {
     // ✅ important:
     // If token not splittable call 'splitTokenByPosition' with edges offset for getting all token as 'formattable'
-    const tokensInRangeLocation = this.model.getTokens().slice(start.index, end.index + 1);
+    const tokensInRangeLocation = originalTokens.slice(start.index, end.index + 1);
     const firstToken = first(tokensInRangeLocation)!;
     const lastToken = last(tokensInRangeLocation)!;
     const isFirstTokenSplittable = isTokenSplittable(firstToken);
@@ -90,8 +85,7 @@ export class Formatter {
     });
   }
 
-  private insertFormattedTokens(formattedTokens: Token[], { start, end }: FormatRangeLocation): Token[] {
-    const originalTokens = this.model.getTokens();
+  private insertFormattedTokens(originalTokens: Token[], formattedTokens: Token[], { start, end }: FormatRangeLocation): Token[] {
     const beforeFormattedTokens = originalTokens.slice(0, start.index);
     const afterFormattedTokens = originalTokens.slice(end.index + 1);
     return [...beforeFormattedTokens, ...formattedTokens, ...afterFormattedTokens];
