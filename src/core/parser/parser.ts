@@ -7,6 +7,12 @@ import { isDelimiter } from '@core/parser/utils/helpers/shared';
 import { last } from '@utils/helpers/array';
 import { TOKEN_TYPE } from '@core/model/utils/constants';
 
+// eslint-disable-next-line
+interface IParser {
+  create: (text: string) => Parser;
+  parse: (text: string) => Token[];
+}
+
 export class Parser {
   private readonly text: string;
   private readonly tokens: Token[];

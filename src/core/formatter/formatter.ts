@@ -2,6 +2,12 @@ import { applyFormatToToken, isTokenFormattable, isTokenSplittable, splitTokenBy
 import { resolveRangeEdgeLocation, resolveTokensFullLength } from '@core/formatter/utils/helpers/shared';
 import { first, last } from '@utils/helpers/array';
 
+// eslint-disable-next-line
+interface IFormatter {
+  create: () => Formatter;
+  applyFormat: (originalTokens: Token[], range: FormatRange, format: TokenFormat) => Token[];
+}
+
 export class Formatter {
   private constructor() {}
 
@@ -26,26 +32,26 @@ export class Formatter {
   }
 
 
-  applyFormat(originalTokens: Token[], range: FormatRange, format: TokenFormat): Token[] {
+  private applyFormat(originalTokens: Token[], range: FormatRange, format: TokenFormat): Token[] {
     const rangeLocation = this.resolveRangeLocation(originalTokens, range);
     const formattedTokens = this.resolveSplittedTokens(originalTokens, format, rangeLocation);
     return this.insertSplittedTokens(originalTokens, formattedTokens, rangeLocation);
   }
 
-  resolveRangeLocation(tokens: Token[], { from, to }: FormatRange): FormatRangeLocation {
+  private resolveRangeLocation(tokens: Token[], { from, to }: FormatRange): FormatRangeLocation {
     const startRangeLocation = resolveRangeEdgeLocation(tokens, from, false);
     const endRangeLocation = resolveRangeEdgeLocation(tokens, to, true);
     return { start: startRangeLocation, end: endRangeLocation };
   }
 
-  resolveSplittedTokens(originalTokens: Token[], format: TokenFormat, rangeLocation: FormatRangeLocation): Token[] {
+  private resolveSplittedTokens(originalTokens: Token[], format: TokenFormat, rangeLocation: FormatRangeLocation): Token[] {
     const { start, end } = rangeLocation;
     return start.index === end.index
       ? this.resolveSplittedTokensBySingle(originalTokens, format, rangeLocation)
       : this.resolveSplittedTokensByMultiple(originalTokens, format, rangeLocation);
   }
 
-  resolveSplittedTokensBySingle(originalTokens: Token[], format: TokenFormat, { start, end }: FormatRangeLocation): Token[] {
+  private resolveSplittedTokensBySingle(originalTokens: Token[], format: TokenFormat, { start, end }: FormatRangeLocation): Token[] {
     // ✅ important:
     // If token not splittable call 'splitTokenByPosition' with edges offset for getting all token as 'formattable'
     const singleToken = originalTokens[start.index];
@@ -63,7 +69,7 @@ export class Formatter {
     return splittedTokens.filter((splittedToken) => splittedToken.value);
   }
 
-  resolveSplittedTokensByMultiple(originalTokens: Token[], format: TokenFormat, { start, end }: FormatRangeLocation): Token[] {
+  private resolveSplittedTokensByMultiple(originalTokens: Token[], format: TokenFormat, { start, end }: FormatRangeLocation): Token[] {
     // ✅ important:
     // If token not splittable call 'splitTokenByPosition' with edges offset for getting all token as 'formattable'
     const tokensInRangeLocation = originalTokens.slice(start.index, end.index + 1);
@@ -85,7 +91,7 @@ export class Formatter {
     return splittedTokens.filter((splittedToken) => splittedToken.value);
   }
 
-  resolveFormattedTokens(tokens: Token[], format: TokenFormat): Token[] {
+  private resolveFormattedTokens(tokens: Token[], format: TokenFormat): Token[] {
     const isNeedToDeleteFormat = tokens.every((token) => (
       !isTokenFormattable(token) || token.formats.includes(format)
     ));
@@ -95,7 +101,7 @@ export class Formatter {
     });
   }
 
-  insertSplittedTokens(originalTokens: Token[], splittedTokens: Token[], { start, end }: FormatRangeLocation): Token[] {
+  private insertSplittedTokens(originalTokens: Token[], splittedTokens: Token[], { start, end }: FormatRangeLocation): Token[] {
     const beforeSplittedTokens = originalTokens.slice(0, start.index);
     const afterSplittedTokens = originalTokens.slice(end.index + 1);
     return [...beforeSplittedTokens, ...splittedTokens, ...afterSplittedTokens];
