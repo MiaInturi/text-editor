@@ -1,2 +1,2 @@
-export * from './resolveNextCodePointUnitCount';
-export * from './resolvePrevCodePointUnitCount';
+export * from './resolveNextCodePointUnitCount/resolveNextCodePointUnitCount';
+export * from './resolvePrevCodePointUnitCount/resolvePrevCodePointUnitCount';

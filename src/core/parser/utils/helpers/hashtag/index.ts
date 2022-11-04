@@ -1,1 +1,1 @@
-export * from './isHashTagName';
+export * from './isHashTagName/isHashTagName';
