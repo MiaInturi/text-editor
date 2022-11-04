@@ -5,17 +5,16 @@ import { last } from '@utils/helpers/array';
 import { UNICODE_CODES } from '@core/parser/utils/constants';
 import { TOKEN_TYPE } from '@core/model/utils/constants';
 
-const isHashTagBound = (parser: Parser, model: Model): boolean => {
+const isHashTagBound = (parser: Parser): boolean => {
   // ✅ important:
   // Hashtags can be concatenated
   if (parser.isTextWordBound()) return true;
-  if (!parser.isTextConsuming()) return last(model.getTokens())?.type === TOKEN_TYPE.HASHTAG;
-
+  if (!parser.isTextConsuming()) return last(parser.getTokens())?.type === TOKEN_TYPE.HASHTAG;
   return false;
 };
 
-const consumeHashTag = (parser: Parser, model: Model): boolean => {
-  if (isHashTagBound(parser, model)) {
+const consumeHashTag = (parser: Parser): boolean => {
+  if (isHashTagBound(parser)) {
     const isHashTagWasSuccessfullyConsumed = parser.consumeSpecialSymbol(UNICODE_CODES.HASHTAG);
     const isHashTagNameWasSuccessfullyConsumed = parser.consumeSpecialSymbolWhile(isHashTagName);
     return isHashTagWasSuccessfullyConsumed && isHashTagNameWasSuccessfullyConsumed;
@@ -23,9 +22,9 @@ const consumeHashTag = (parser: Parser, model: Model): boolean => {
   return false;
 };
 
-export const parseHashTag = (parser: Parser, model: Model): boolean => {
+export const parseHashTag = (parser: Parser): boolean => {
   const positionBeforeConsumeHashTag = parser.tell();
-  if (consumeHashTag(parser, model)) {
+  if (consumeHashTag(parser)) {
     const positionAfterConsumeHashTag = parser.tell();
     const hashTagValue = parser.getTextFragment(positionBeforeConsumeHashTag, positionAfterConsumeHashTag);
     parser.pushToken(Model.CreateHashTagToken(hashTagValue));

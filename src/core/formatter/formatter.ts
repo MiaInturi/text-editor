@@ -5,6 +5,11 @@ import { first, last } from '@utils/helpers/array';
 export class Formatter {
   private constructor() {}
 
+  public static create(): Formatter {
+    const formatter = new Formatter();
+    return formatter;
+  }
+
   public static applyFormat(originalTokens: Token[], range: FormatRange, format: TokenFormat): Token[] {
     if (!Formatter.isRangeValid(originalTokens, range)) throw new Error('Range \'to\' - \'from\' is invalid');
 

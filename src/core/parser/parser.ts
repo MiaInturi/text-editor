@@ -8,49 +8,59 @@ import { last } from '@utils/helpers/array';
 import { TOKEN_TYPE } from '@core/model/utils/constants';
 
 export class Parser {
-  private readonly model: Model;
   private readonly text: string;
-  private position: Position;
-
-  private readonly parseFunctions = [parseHashTag, parseNewLine, parseText];
+  private readonly tokens: Token[];
+  private position: Position = 0;
   private textFragmentStartPos: Index = -1;
   private textFragmentEndPos: Index = -1;
 
-  public constructor(model: Model, text: string, position: Position = 0) {
-    if (position > text.length) throw new Error('Position cannot be greater than text length');
-    this.model = model;
+
+  private constructor(text: string) {
     this.text = text;
-    this.position = position;
+    this.tokens = [];
   }
 
-  public parse(): void {
+  public static create(text: string): Parser {
+    const parser = new Parser(text);
+    return parser;
+  }
+
+  public static parse(text: string): Token[] {
+    const parser = new Parser(text);
+    const parseFunctions = [parseHashTag, parseNewLine, parseText];
+    return parser.parse(parseFunctions);
+  }
+
+
+  parse(parseFunctions: ParseFunction[]): Token[] {
+    // ✅ important:
+    // All functions should return 'boolean' for indicate of consume success/fail
+    // array method 'some' will stop as soon as some of 'parseFunctions' return 'true'
     while (this.isHasNext()) {
-      // ✅ important:
-      // All functions should return 'boolean' for indicate of consume success/fail
-      // array method 'some' will stop as soon as some of 'parseFunctions' return 'true'
-      this.parseFunctions.some((parseFunction) => parseFunction(this, this.model));
+      parseFunctions.some((parseFunction) => parseFunction(this));
     }
     // ✅ important:
     // Need to flush before end of parse for handle case when text token in the end 'text'
     this.flushTokens();
+    return this.tokens;
   }
 
 
-  public tell(): Position {
+  tell(): Position {
     return this.position;
   }
 
-  public seek(position: Position): void {
+  seek(position: Position): void {
     if (position > this.text.length) throw new Error('Position cannot be greater than text length');
     this.position = position;
   }
 
-  private checkNext(): CodePoint | undefined {
+  checkNext(): CodePoint | undefined {
     // TODO handle emoji
     return this.text.codePointAt(this.position);
   }
 
-  private checkPrev(): CodePoint | undefined {
+  checkPrev(): CodePoint | undefined {
     const isPrevCodePointExists = this.position > 0;
     if (!isPrevCodePointExists) return;
 
@@ -63,11 +73,11 @@ export class Parser {
     return this.text.codePointAt(this.position - positionShift);
   }
 
-  private isHasNext(): boolean {
+  isHasNext(): boolean {
     return this.position < this.text.length;
   }
 
-  private selectNext(): CodePoint | undefined {
+  selectNext(): CodePoint | undefined {
     const isNextCodePointExists = this.isHasNext();
     if (!isNextCodePointExists) return;
 
@@ -80,29 +90,33 @@ export class Parser {
     this.seek(this.position + positionShift);
     return nextCodePoint;
   }
-  
 
-  public flushTokens(): void {
+
+  getTokens(): Token[] {
+    return this.tokens;
+  }
+
+  pushToken(token: Token): void {
+    // ✅ important:
+    // Call 'flush' for save text and chronological order before add new token
+    this.flushTokens();
+    this.tokens.push(token);
+  }
+
+  flushTokens(): void {
     // ✅ important:
     // Need to push text token into 'tokens' only if we are in the middle of a parsing process
     // Because not text tokens push themselves
     if (!this.isTextConsuming()) return;
 
     const textForToken = this.text.substring(this.textFragmentStartPos, this.textFragmentEndPos);
+    this.tokens.push(Model.CreateTextToken(textForToken));
     this.textFragmentStartPos = -1;
     this.textFragmentEndPos = -1;
-    this.model.pushToken(Model.CreateTextToken(textForToken));
-  }
-
-  public pushToken(token: Token): void {
-    // ✅ important:
-    // Call 'flush' for save text and chronological order before add new token
-    this.flushTokens();
-    this.model.pushToken(token);
   }
 
 
-  public consumeSpecialSymbol(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
+  consumeSpecialSymbol(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
     const codePoint = this.checkNext();
     if (!codePoint) return false;
 
@@ -118,7 +132,7 @@ export class Parser {
     return false;
   }
 
-  public consumeSpecialSymbolWhile(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
+  consumeSpecialSymbolWhile(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
     // ✅ important:
     // Return 'true' if at least one consume was successful
     const positionBeforeConsumeWhile = this.position;
@@ -131,22 +145,21 @@ export class Parser {
   }
 
 
-  public isTextWordBound(): boolean {
+  isTextWordBound(): boolean {
     if (!this.position) return true;
-    if (this.isTextConsuming()) return isDelimiter(this.checkPrev() ?? NaN);
-
-    return last(this.model.getTokens())?.type === TOKEN_TYPE.NEWLINE;
+    if (this.isTextConsuming()) return isDelimiter(this.checkPrev()!);
+    return last(this.tokens)?.type === TOKEN_TYPE.NEWLINE;
   }
 
-  public isTextConsuming(): boolean {
+  isTextConsuming(): boolean {
     return this.textFragmentStartPos !== this.textFragmentEndPos;
   }
 
-  public getTextFragment(from: Index, to: Index): string {
+  getTextFragment(from: Index, to: Index): string {
     return this.text.substring(from, to);
   }
 
-  public consumeText(): void {
+  consumeText(): void {
     if (!this.isTextConsuming()) {
       this.textFragmentStartPos = this.position;
       this.textFragmentEndPos = this.position;
