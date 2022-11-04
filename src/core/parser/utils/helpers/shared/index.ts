@@ -1,3 +1,3 @@
-export * from './isDelimiter';
-export * from './isLetter';
-export * from './isNumber';
+export * from './isDelimeter/isDelimiter';
+export * from './isLetter/isLetter';
+export * from './isNumber/isNumber';

@@ -1,4 +1,4 @@
-import { UNICODE_CODES } from '../../constants';
+import { UNICODE_CODES } from '../../../constants';
 
 const isSpace = (codePoint: CodePoint): boolean => (
   codePoint === UNICODE_CODES.SPACE

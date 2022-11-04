@@ -4,25 +4,23 @@ import { parseNewLine } from './newline';
 
 describe('Newline parse', () => {
   test('Failed parse newline when text does not has it', () => {
-    const model = new Model();
     const text = 'Text without newlines';
-    const parser = new Parser(model, text);
+    const parser = Parser.create(text);
     expect(parseNewLine(parser)).toBe(false);
   });
 
   test('Successful parse newline ("return", "return + newline", "newline")', () => {
-    const model = new Model();
     const text = '\r\r\n\n';
-    const parser = new Parser(model, text);
+    const parser = Parser.create(text);
     const expectedTokens: Token[] = [
-      { type: 'newline', value: '\r' },
-      { type: 'newline', value: '\r\n' },
-      { type: 'newline', value: '\n' }
+      Model.CreateNewLineToken('\r'),
+      Model.CreateNewLineToken('\r\n'),
+      Model.CreateNewLineToken('\n')
     ];
 
     expect(parseNewLine(parser)).toBe(true);
     expect(parseNewLine(parser)).toBe(true);
     expect(parseNewLine(parser)).toBe(true);
-    expect(model.getTokens()).toStrictEqual(expectedTokens);
+    expect(parser.getTokens()).toStrictEqual(expectedTokens);
   });
 });
