@@ -27,7 +27,7 @@ export const parseHashTag = (parser: Parser): boolean => {
   if (consumeHashTag(parser)) {
     const positionAfterConsumeHashTag = parser.tell();
     const hashTagValue = parser.getTextFragment(positionBeforeConsumeHashTag, positionAfterConsumeHashTag);
-    parser.pushToken(Model.CreateHashTagToken(hashTagValue));
+    parser.pushToken(Model.CreateHashTagToken(hashTagValue as HashTagTokenValue));
     return true;
   }
   // ✅ important:

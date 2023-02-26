@@ -1,88 +1,32 @@
 import { Model } from './model';
+import { TOKEN_FORMAT, TOKEN_TYPE } from '@core/model/utils/constants';
 
 describe('Model class: creating tokens', () => {
-  test('Create Text Token without formats', () => {
-    const text = 'text';
-    const textToken = Model.CreateTextToken(text);
-    const expectedTextToken: TextToken = {
-      type: 'text',
-      value: text,
-      formats: []
-    };
-    expect(textToken).toStrictEqual(expectedTextToken);
+  test('Should create text token with/without format', () => {
+    const value = 'text';
+    const formats = new Set([TOKEN_FORMAT.BOLD]);
+
+    const expectedTokenWithoutFormats: Token = { type: TOKEN_TYPE.TEXT, value, formats: new Set() };
+    const expectedTokenWithFormats: Token = { type: TOKEN_TYPE.TEXT, value, formats };
+
+    expect(Model.CreateTextToken(value)).toStrictEqual(expectedTokenWithoutFormats);
+    expect(Model.CreateTextToken(value, formats)).toStrictEqual(expectedTokenWithFormats);
   });
 
-  test('Create Text Token with formats', () => {
-    const text = 'text';
-    const formats: TokenFormat[] = ['bold', 'italic'];
-    const textToken = Model.CreateTextToken(text, formats);
-    const expectedTextToken: TextToken = {
-      type: 'text',
-      value: text,
-      formats
-    };
-    expect(textToken).toStrictEqual(expectedTextToken);
+  test('Should create text token new line token', () => {
+    const value = '\r\n';
+    const expectedToken: Token = { type: TOKEN_TYPE.NEWLINE, value };
+    expect(Model.CreateNewLineToken(value)).toStrictEqual(expectedToken);
   });
 
-  test('Create NewLine Token without formats', () => {
-    const newLine = '\n';
-    const newLineToken = Model.CreateNewLineToken(newLine);
-    const expectedNewLineToken: NewLineToken = {
-      type: 'newline',
-      value: newLine
-    };
-    expect(newLineToken).toStrictEqual(expectedNewLineToken);
-  });
+  test('Should create hashtag token with/without format', () => {
+    const value = '#hashtag';
+    const formats = new Set([TOKEN_FORMAT.BOLD]);
 
-  test('Create HashTag Token without formats', () => {
-    const hashTag = '#hashtag';
-    const hashTagToken = Model.CreateHashTagToken(hashTag);
-    const expectedHashTagToken: HashTagToken = {
-      type: 'hashtag',
-      value: hashTag,
-      formats: []
-    };
-    expect(hashTagToken).toStrictEqual(expectedHashTagToken);
-  });
+    const expectedTokenWithoutFormats: Token = { type: TOKEN_TYPE.HASHTAG, value, formats: new Set() };
+    const expectedTokenWithFormats: Token = { type: TOKEN_TYPE.HASHTAG, value, formats };
 
-  test('Create HashTag Token with formats', () => {
-    const hashTag = '#hashtag';
-    const formats: TokenFormat[] = ['bold', 'italic'];
-    const hashTagToken = Model.CreateHashTagToken(hashTag, formats);
-    const expectedHashTagToken: HashTagToken = {
-      type: 'hashtag',
-      value: hashTag,
-      formats
-    };
-    expect(hashTagToken).toStrictEqual(expectedHashTagToken);
-  });
-});
-
-describe('Model class: getting and setting tokens', () => {
-  test('Constructor should can to get tokens array as first argument', () => {
-    const modelWithoutTokens = new Model();
-    expect(modelWithoutTokens.getTokens()).toStrictEqual([]);
-
-    const tokens: Token[] = [
-      Model.CreateTextToken('text'),
-      Model.CreateNewLineToken('\n'),
-      Model.CreateHashTagToken('#hashtag')
-    ];
-    const modelWithTokens = new Model(tokens);
-    expect(modelWithTokens.getTokens()).toStrictEqual(tokens);
-  });
-
-  test('Get token by existed / not existed index', () => {
-    const tokens: Token[] = [
-      Model.CreateTextToken('text'),
-      Model.CreateNewLineToken('\n'),
-      Model.CreateHashTagToken('#hashtag')
-    ];
-    const model = new Model(tokens);
-
-    const existedIndex = 0;
-    const notExistedIndex = tokens.length;
-    expect(model.getToken(existedIndex)).toStrictEqual(tokens[existedIndex]);
-    expect(model.getToken(notExistedIndex)).toBeUndefined();
+    expect(Model.CreateHashTagToken(value)).toStrictEqual(expectedTokenWithoutFormats);
+    expect(Model.CreateHashTagToken(value, formats)).toStrictEqual(expectedTokenWithFormats);
   });
 });

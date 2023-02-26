@@ -1,4 +1,4 @@
-export const applyFormatToToken = (token: FormattableTokenBase, format: TokenFormat, deleteFormat: boolean = false): FormattableTokenBase => {
+export const applyFormatToToken = <T extends FormattableTokenBase>(token: T, format: TokenFormat, deleteFormat: boolean = false): T => {
   if (deleteFormat) {
     token.formats.delete(format);
     return token;
