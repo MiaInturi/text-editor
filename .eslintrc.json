@@ -12,7 +12,7 @@
     "semi": ["error", "always"],
     "object-curly-spacing": ["error", "always"],
     "eol-last": ["error", "always"],
-    "@typescript-eslint/comma-dangle": ["off", "always"],
+    "@typescript-eslint/comma-dangle": ["error", "never"],
     "@typescript-eslint/lines-between-class-members": ["off", "always"],
     "@typescript-eslint/no-empty-function": ["off", "always"],
     "@typescript-eslint/explicit-function-return-type": "error",

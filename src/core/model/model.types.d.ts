@@ -7,7 +7,7 @@ interface TokenBase {
 }
 
 interface FormattableTokenBase extends TokenBase {
-  formats: TokenFormat[];
+  formats: Set<TokenFormat>;
 }
 
 interface TextToken extends FormattableTokenBase {
