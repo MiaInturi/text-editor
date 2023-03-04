@@ -3,7 +3,7 @@ import { parseNewLine } from '@core/parser/kinds/newline/newline';
 import { parseText } from '@core/parser/kinds/text/text';
 import { Model } from '@core/model/model';
 import { resolveNextCodePointUnitCount, resolvePrevCodePointUnitCount } from '@core/parser/utils/helpers/unicode';
-import { isDelimiter } from '@core/parser/utils/helpers/shared';
+import { isDelimiter } from '@core/parser/utils/helpers/other';
 import { last } from '@utils/helpers/array';
 import { TOKEN_TYPE } from '@core/model/utils/constants';
 
@@ -21,18 +21,28 @@ export class Parser {
   private textFragmentEndPos: Index = -1;
 
 
-  private constructor(text: string) {
-    this.text = text;
-    this.tokens = [];
+  private constructor(text: string, initialTokens: Token[] = []) {
+    // ✅ important:
+    // Parsing process should be 'in action' if last token is common text
+    const lastInitialToken = last(initialTokens);
+    if (lastInitialToken?.type === TOKEN_TYPE.TEXT) {
+      this.text = `${lastInitialToken.value}${text}`;
+      this.tokens = initialTokens.slice(0, -1);
+      this.textFragmentStartPos = 0;
+      this.textFragmentEndPos = lastInitialToken.value.length;
+      this.position = lastInitialToken.value.length;
+    } else {
+      this.text = text;
+      this.tokens = initialTokens;
+    }
   }
 
-  public static create(text: string): Parser {
-    const parser = new Parser(text);
-    return parser;
+  public static create(text: string, initialTokens?: Token[]): Parser {
+    return new Parser(text, initialTokens);
   }
 
-  public static parse(text: string): Token[] {
-    const parser = new Parser(text);
+  public static parse(text: string, initialTokens?: Token[]): Token[] {
+    const parser = new Parser(text, initialTokens);
     const parseFunctions = [parseHashTag, parseNewLine, parseText];
     return parser.parse(parseFunctions);
   }
@@ -41,12 +51,12 @@ export class Parser {
   parse(parseFunctions: ParseFunction[]): Token[] {
     // ✅ important:
     // All functions should return 'boolean' for indicate of consume success/fail
-    // array method 'some' will stop as soon as some of 'parseFunctions' return 'true'
+    // array method 'some' will stop as soon as some of 'parseFunctions' return true
     while (this.isHasNext()) {
       parseFunctions.some((parseFunction) => parseFunction(this));
     }
     // ✅ important:
-    // Need to flush before end of parse for handle case when text token in the end 'text'
+    // Need to flush before end of parse for handle case when text token in the end of 'text'
     this.flushTokens();
     return this.tokens;
   }
