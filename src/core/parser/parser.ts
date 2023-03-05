@@ -1,8 +1,8 @@
-import { parseHashTag } from '@core/parser/kinds/hashtag/hashtag';
-import { parseNewLine } from '@core/parser/kinds/newline/newline';
-import { parseText } from '@core/parser/kinds/text/text';
+import { parseHashTag } from '@core/parser/handlers/hashtag/hashtag';
+import { parseNewLine } from '@core/parser/handlers/newline/newline';
+import { parseText } from '@core/parser/handlers/text/text';
 import { Model } from '@core/model/model';
-import { resolveNextCodePointUnitCount, resolvePrevCodePointUnitCount } from '@core/parser/utils/helpers/unicode';
+import { resolveNextCodePointUnitCount, resolvePrevCodePointUnitCount } from '@core/parser/utils/helpers/codePoint';
 import { isDelimiter } from '@core/parser/utils/helpers/other';
 import { last } from '@utils/helpers/array';
 import { TOKEN_TYPE } from '@core/model/utils/constants';
@@ -43,17 +43,17 @@ export class Parser {
 
   public static parse(text: string, initialTokens?: Token[]): Token[] {
     const parser = new Parser(text, initialTokens);
-    const parseFunctions = [parseHashTag, parseNewLine, parseText];
-    return parser.parse(parseFunctions);
+    const handlers = [parseHashTag, parseNewLine, parseText];
+    return parser.parse(handlers);
   }
 
 
-  parse(parseFunctions: ParseFunction[]): Token[] {
+  parse(handlers: ParserHandler[]): Token[] {
     // ✅ important:
     // All functions should return 'boolean' for indicate of consume success/fail
-    // array method 'some' will stop as soon as some of 'parseFunctions' return true
+    // array method 'some' will stop as soon as some of 'handlers' return true
     while (this.isHasNext()) {
-      parseFunctions.some((parseFunction) => parseFunction(this));
+      handlers.some((parseFunction) => parseFunction(this));
     }
     // ✅ important:
     // Need to flush before end of parse for handle case when text token in the end of 'text'
