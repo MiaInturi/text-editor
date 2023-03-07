@@ -31,6 +31,6 @@ describe('Text parsing: add token and change parser position', () => {
 
     parseText(parser);
 
-    expect(parser.isTextConsuming()).toBe(true);
+    expect(parser.getConsumeTextStatus().isTextConsuming).toBe(true);
   });
 });

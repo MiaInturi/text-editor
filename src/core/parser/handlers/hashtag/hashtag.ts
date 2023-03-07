@@ -8,8 +8,9 @@ import { TOKEN_TYPE } from '@core/model/utils/constants';
 const isHashTagBound = (parser: Parser): boolean => {
   // ✅ important:
   // Hashtags can be concatenated
-  if (parser.isTextWordBound()) return true;
-  if (!parser.isTextConsuming()) return last(parser.getTokens())?.type === TOKEN_TYPE.HASHTAG;
+  const consumeTextStatus = parser.getConsumeTextStatus();
+  if (consumeTextStatus.isTextWordBound) return true;
+  if (!consumeTextStatus.isTextConsuming) return last(parser.getTokens())?.type === TOKEN_TYPE.HASHTAG;
   return false;
 };
 

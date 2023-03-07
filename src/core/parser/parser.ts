@@ -13,28 +13,30 @@ interface IParser {
   parse: (text: string) => Token[];
 }
 
+// TODO handle emoji
 export class Parser {
   private readonly text: string;
   private readonly tokens: Token[];
-  private position: Position = 0;
-  private textFragmentStartPos: Index = -1;
-  private textFragmentEndPos: Index = -1;
-
+  private textFragmentStartPos: Index;
+  private textFragmentEndPos: Index;
+  private position: Position;
 
   private constructor(text: string, initialTokens: Token[] = []) {
-    // ✅ important:
-    // Parsing process should be 'in action' if last token is common text
     const lastInitialToken = last(initialTokens);
-    if (lastInitialToken?.type === TOKEN_TYPE.TEXT) {
+    const isParserInTheProcess = lastInitialToken?.type === TOKEN_TYPE.TEXT;
+    if (isParserInTheProcess) {
       this.text = `${lastInitialToken.value}${text}`;
       this.tokens = initialTokens.slice(0, -1);
       this.textFragmentStartPos = 0;
       this.textFragmentEndPos = lastInitialToken.value.length;
       this.position = lastInitialToken.value.length;
-    } else {
-      this.text = text;
-      this.tokens = initialTokens;
+      return;
     }
+    this.text = text;
+    this.tokens = initialTokens;
+    this.textFragmentStartPos = -1;
+    this.textFragmentEndPos = -1;
+    this.position = 0;
   }
 
   public static create(text: string, initialTokens?: Token[]): Parser {
@@ -48,12 +50,12 @@ export class Parser {
   }
 
 
-  parse(handlers: ParserHandler[]): Token[] {
+  public parse(handlers: ParserHandler[]): Token[] {
     // ✅ important:
     // All functions should return 'boolean' for indicate of consume success/fail
     // array method 'some' will stop as soon as some of 'handlers' return true
     while (this.isHasNext()) {
-      handlers.some((parseFunction) => parseFunction(this));
+      handlers.some((handler) => handler(this));
     }
     // ✅ important:
     // Need to flush before end of parse for handle case when text token in the end of 'text'
@@ -61,43 +63,37 @@ export class Parser {
     return this.tokens;
   }
 
-
-  tell(): Position {
+  public tell(): Position {
     return this.position;
   }
 
-  seek(position: Position): void {
+  public seek(position: Position): void {
     if (position > this.text.length) throw new Error('Position cannot be greater than text length');
     this.position = position;
   }
 
-  checkNext(): CodePoint | undefined {
-    // TODO handle emoji
+
+  private checkNext(): CodePoint | undefined {
     return this.text.codePointAt(this.position);
   }
 
-  checkPrev(): CodePoint | undefined {
+  private checkPrev(): CodePoint | undefined {
     const isPrevCodePointExists = this.position > 0;
     if (!isPrevCodePointExists) return;
 
-    // TODO handle emoji
-    // ✅ important:
-    // If prev index code point in special range (from 0xDC00 to 0xDFFF)
-    // then codePoint contains high and low surrogates
     const prevIndexCodePoint = this.text.codePointAt(this.position - 1)!;
     const positionShift = resolvePrevCodePointUnitCount(prevIndexCodePoint);
     return this.text.codePointAt(this.position - positionShift);
   }
 
-  isHasNext(): boolean {
+  private isHasNext(): boolean {
     return this.position < this.text.length;
   }
 
-  selectNext(): CodePoint | undefined {
+  private selectNext(): CodePoint | undefined {
     const isNextCodePointExists = this.isHasNext();
     if (!isNextCodePointExists) return;
 
-    // TODO handle emoji
     // ✅ important:
     // Calculate units that needed for codePoint
     // because String.length property equals to units count in string
@@ -108,18 +104,7 @@ export class Parser {
   }
 
 
-  getTokens(): Token[] {
-    return this.tokens;
-  }
-
-  pushToken(token: Token): void {
-    // ✅ important:
-    // Call 'flush' for save text and chronological order before add new token
-    this.flushTokens();
-    this.tokens.push(token);
-  }
-
-  flushTokens(): void {
+  private flushTokens(): void {
     // ✅ important:
     // Need to push text token into 'tokens' only if we are in the middle of a parsing process
     // Because not text tokens push themselves
@@ -131,8 +116,19 @@ export class Parser {
     this.textFragmentEndPos = -1;
   }
 
+  public getTokens(): Token[] {
+    return this.tokens;
+  }
 
-  consumeSpecialSymbol(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
+  public pushToken(token: Token): void {
+    // ✅ important:
+    // Call 'flush' for save text and chronological order before add new token
+    this.flushTokens();
+    this.tokens.push(token);
+  }
+
+
+  public consumeSpecialSymbol(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
     const codePoint = this.checkNext();
     if (!codePoint) return false;
 
@@ -148,7 +144,7 @@ export class Parser {
     return false;
   }
 
-  consumeSpecialSymbolWhile(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
+  public consumeSpecialSymbolWhile(codePointMatch: CodePoint | ConsumeMatchFunction): boolean {
     // ✅ important:
     // Return 'true' if at least one consume was successful
     const positionBeforeConsumeWhile = this.position;
@@ -160,27 +156,34 @@ export class Parser {
     return positionBeforeConsumeWhile !== positionAfterConsumeWhile;
   }
 
-
-  isTextWordBound(): boolean {
-    if (!this.position) return true;
-    if (this.isTextConsuming()) return isDelimiter(this.checkPrev()!);
-    return last(this.tokens)?.type === TOKEN_TYPE.NEWLINE;
-  }
-
-  isTextConsuming(): boolean {
-    return this.textFragmentStartPos !== this.textFragmentEndPos;
-  }
-
-  getTextFragment(from: Index, to: Index): string {
-    return this.text.substring(from, to);
-  }
-
-  consumeText(): void {
+  public consumeText(): void {
     if (!this.isTextConsuming()) {
       this.textFragmentStartPos = this.position;
       this.textFragmentEndPos = this.position;
     }
     this.selectNext();
     this.textFragmentEndPos = this.position;
+  }
+
+
+  private isTextConsuming(): boolean {
+    return this.textFragmentStartPos !== this.textFragmentEndPos;
+  }
+
+  private isTextWordBound(): boolean {
+    if (!this.position) return true;
+    if (this.isTextConsuming()) return isDelimiter(this.checkPrev()!);
+    return last(this.tokens)?.type === TOKEN_TYPE.NEWLINE;
+  }
+
+  public getConsumeTextStatus(): { isTextConsuming: boolean; isTextWordBound: boolean; } {
+    return {
+      isTextConsuming: this.isTextConsuming(),
+      isTextWordBound: this.isTextWordBound()
+    };
+  }
+
+  public getTextFragment(from: Index, to: Index): string {
+    return this.text.substring(from, to);
   }
 }
