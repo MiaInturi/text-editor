@@ -1,4 +1,27 @@
 export class Model {
+  public static CreateTextToken(value: string, formats?: Set<TokenFormat>): TextToken {
+    return {
+      type: 'text',
+      value,
+      formats: formats ?? new Set()
+    };
+  }
+
+  public static CreateNewLineToken(value: NewLineTokenValue): NewLineToken {
+    return {
+      type: 'newline',
+      value
+    };
+  }
+
+  public static CreateHashTagToken(value: HashTagTokenValue, formats?: Set<TokenFormat>): HashTagToken {
+    return {
+      type: 'hashtag',
+      value,
+      formats: formats ?? new Set()
+    };
+  }
+
   private tokens;
 
   public constructor(tokens?: Token[]) {
@@ -19,29 +42,5 @@ export class Model {
 
   public pushToken(token: Token): void {
     this.tokens.push(token);
-  }
-
-
-  public static CreateTextToken(value: string, formats?: TokenFormat[]): TextToken {
-    return {
-      type: 'text',
-      value,
-      formats: formats ?? []
-    };
-  }
-
-  public static CreateNewLineToken(value: string): NewLineToken {
-    return {
-      type: 'newline',
-      value
-    };
-  }
-
-  public static CreateHashTagToken(value: string, formats?: TokenFormat[]): HashTagToken {
-    return {
-      type: 'hashtag',
-      value,
-      formats: formats ?? []
-    };
   }
 }

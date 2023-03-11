@@ -1,15 +1,19 @@
 import { isHashTagName } from './isHashTagName';
 
-describe('\'isHashTagName\' helper', () => {
-  test('Should return \'true\' only for allowed symbols: letters, numbers and low lines', () => {
-    const correctHashTagNameLetter = 'a'.codePointAt(0)!;
-    const correctHashTagNameNumber = '1'.codePointAt(0)!;
-    const correctHashTagNameLowLine = '_'.codePointAt(0)!;
-    const incorrectHashTagNameSymbol = '!'.codePointAt(0)!;
+describe('\'isHashTagName\' helper: allowed symbols', () => {
+  test('Should return true for allowed symbols code points: letters, numbers, low line', () => {
+    const correctSymbols = ['a', '1', '_'];
+    correctSymbols.forEach((correctSymbol) => {
+      const correctSymbolCodePoint = correctSymbol.codePointAt(0)!;
+      expect(isHashTagName(correctSymbolCodePoint)).toBe(true);
+    });
+  });
 
-    expect(isHashTagName(correctHashTagNameLetter)).toBe(true);
-    expect(isHashTagName(correctHashTagNameNumber)).toBe(true);
-    expect(isHashTagName(correctHashTagNameLowLine)).toBe(true);
-    expect(isHashTagName(incorrectHashTagNameSymbol)).toBe(false);
+  test('Should return false for not allowed symbols code points', () => {
+    const incorrectSymbols = ['`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '+', '"', ',', '.', ':'];
+    incorrectSymbols.forEach((incorrectSymbol) => {
+      const incorrectSymbolCodePoint = incorrectSymbol.codePointAt(0)!;
+      expect(isHashTagName(incorrectSymbolCodePoint)).toBe(false);
+    });
   });
 });

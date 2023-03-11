@@ -1,11 +1,8 @@
-import { cloneToken } from '@core/model/utils/helpers/shared';
-import { addUniqueValueIntoArray } from '@utils/helpers/array';
-
-export const applyFormatToToken = (token: FormattableTokenBase, format: TokenFormat, deleteFormat: boolean = false): FormattableTokenBase => {
-  return {
-    ...cloneToken(token),
-    formats: deleteFormat
-      ? token.formats.filter((alreadyAppliedFormat) => alreadyAppliedFormat !== format)
-      : addUniqueValueIntoArray(token.formats, format)
-  };
+export const applyFormatToToken = <T extends FormattableTokenBase>(token: T, format: TokenFormat, deleteFormat: boolean = false): T => {
+  if (deleteFormat) {
+    token.formats.delete(format);
+    return token;
+  }
+  token.formats.add(format);
+  return token;
 };

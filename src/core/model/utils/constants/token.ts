@@ -1,7 +1,6 @@
 type TokenTypeConstants = {
   [key in Uppercase<TokenType>]: Extract<TokenType, Lowercase<key>>
 };
-
 export const TOKEN_TYPE: TokenTypeConstants = {
   TEXT: 'text',
   NEWLINE: 'newline',
@@ -11,7 +10,6 @@ export const TOKEN_TYPE: TokenTypeConstants = {
 type TokenFormatConstants = {
   [key in Uppercase<TokenFormat>]: Extract<TokenFormat, Lowercase<key>>;
 };
-
 export const TOKEN_FORMAT: TokenFormatConstants = {
   BOLD: 'bold',
   ITALIC: 'italic'

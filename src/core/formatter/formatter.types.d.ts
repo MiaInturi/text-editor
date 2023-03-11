@@ -1,14 +1,14 @@
-interface FormatRange {
+interface SelectionRange {
   from: Position;
   to: Position;
 }
 
-interface FormatRangeEdgeLocation {
+interface PositionLocationInTokens {
   index: Index;
   offset: number;
 }
 
-interface FormatRangeLocation {
-  start: FormatRangeEdgeLocation;
-  end: FormatRangeEdgeLocation;
+interface RangeLocationInTokens {
+  start: PositionLocationInTokens;
+  end: PositionLocationInTokens;
 }
