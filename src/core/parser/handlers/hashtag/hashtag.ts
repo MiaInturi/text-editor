@@ -1,9 +1,9 @@
-import type { Parser } from '@core/parser/parser';
-import { Model } from '@core/model/model';
-import { isHashTagName } from '@core/parser/utils/helpers/hashtag';
-import { last } from '@utils/helpers/array';
-import { UNICODE_CODES } from '@core/parser/utils/constants';
-import { TOKEN_TYPE } from '@core/model/utils/constants';
+import { Model } from '~core/model/model';
+import { TOKEN_TYPE } from '~core/model/utils/constants';
+import type { Parser } from '~core/parser/parser';
+import { UNICODE_CODES } from '~core/parser/utils/constants';
+import { isHashTagName } from '~core/parser/utils/helpers/hashtag';
+import { last } from '~utils/helpers/array';
 
 const isHashTagBound = (parser: Parser): boolean => {
   // ✅ important:

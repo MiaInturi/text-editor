@@ -1,5 +1,5 @@
-import { applyFormatToToken } from '@core/formatter/utils/helpers/format';
-import { TOKEN_FORMAT, TOKEN_TYPE } from '@core/model/utils/constants';
+import { applyFormatToToken } from '~core/formatter/utils/helpers/format';
+import { TOKEN_FORMAT, TOKEN_TYPE } from '~core/model/utils/constants';
 
 describe('\'applyFormatToToken\' helper', () => {
   test('Should add format to token if it does not contain it', () => {

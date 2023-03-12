@@ -1,4 +1,4 @@
-import { UTF16_UTIL } from '@core/parser/utils/constants';
+import { UTF16_UTIL } from '~core/parser/utils/constants';
 import { resolveNextCodePointUnitCount } from './resolveNextCodePointUnitCount';
 
 describe('\'resolveNextCodePointUnitCount\' helper: unit count', () => {

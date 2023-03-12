@@ -1,5 +1,5 @@
-import { isTokenSplittable } from '@core/formatter/utils/helpers/other';
-import { TOKEN_TYPE } from '@core/model/utils/constants';
+import { isTokenSplittable } from '~core/formatter/utils/helpers/other';
+import { TOKEN_TYPE } from '~core/model/utils/constants';
 
 describe('\'isTokenSplittable\' helper', () => {
   test('Should return true only for token that value can be split', () => {

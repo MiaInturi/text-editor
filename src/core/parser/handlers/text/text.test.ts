@@ -1,4 +1,4 @@
-import { Parser } from '@core/parser/parser';
+import { Parser } from '~core/parser/parser';
 import { parseText } from './text';
 
 describe('Text parsing: consuming symbols', () => {

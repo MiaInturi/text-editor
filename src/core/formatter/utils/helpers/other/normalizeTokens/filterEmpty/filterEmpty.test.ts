@@ -1,5 +1,5 @@
-import { filterEmpty } from '@core/formatter/utils/helpers/other/normalizeTokens/filterEmpty/filterEmpty';
-import { TOKEN_TYPE } from '@core/model/utils/constants';
+import { filterEmpty } from '~core/formatter/utils/helpers/other/normalizeTokens/filterEmpty/filterEmpty';
+import { TOKEN_TYPE } from '~core/model/utils/constants';
 
 describe('\'filterEmpty\' helper', () => {
   test('Should filter tokens with empty value', () => {

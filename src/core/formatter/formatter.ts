@@ -1,6 +1,6 @@
-import { applyFormatToToken, isTokenFormattable } from '@core/formatter/utils/helpers/format';
-import { isTokenSplittable, normalizeTokens, resolvePositionLocationInTokens, splitTokenByPosition } from '@core/formatter/utils/helpers/other';
-import { first, last } from '@utils/helpers/array';
+import { applyFormatToToken, isTokenFormattable } from '~core/formatter/utils/helpers/format';
+import { isTokenSplittable, normalizeTokens, resolvePositionLocationInTokens, splitTokenByPosition } from '~core/formatter/utils/helpers/other';
+import { first, last } from '~utils/helpers/array';
 
 export class Formatter {
   private constructor() {}

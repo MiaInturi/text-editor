@@ -1,5 +1,5 @@
-import { normalizeTokens } from '@core/formatter/utils/helpers/other';
-import { TOKEN_FORMAT, TOKEN_TYPE } from '@core/model/utils/constants';
+import { normalizeTokens } from '~core/formatter/utils/helpers/other';
+import { TOKEN_FORMAT, TOKEN_TYPE } from '~core/model/utils/constants';
 
 describe('\'normalizeTokens\' helper', () => {
   test('Should filter empty and join similar tokens', () => {

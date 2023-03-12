@@ -1,4 +1,4 @@
-import { cloneToken } from '@core/model/utils/helpers/other';
+import { cloneToken } from '~core/model/utils/helpers/other';
 
 export const splitTokenByPosition = <T extends Token>(token: T, position: Position): [Token, Token] => {
   const beforePositionToken = { ...cloneToken(token), value: token.value.slice(0, position) };
