@@ -1,5 +1,5 @@
-import { Model } from '@core/model/model';
-import { Parser } from '@core/parser/parser';
+import { Model } from '~core/model/model';
+import { Parser } from '~core/parser/parser';
 import { parseNewLine } from './newline';
 
 describe('Newline parsing: consuming symbols', () => {

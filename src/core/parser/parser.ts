@@ -1,11 +1,11 @@
-import { parseHashTag } from '@core/parser/handlers/hashtag/hashtag';
-import { parseNewLine } from '@core/parser/handlers/newline/newline';
-import { parseText } from '@core/parser/handlers/text/text';
-import { Model } from '@core/model/model';
-import { resolveNextCodePointUnitCount, resolvePrevCodePointUnitCount } from '@core/parser/utils/helpers/codePoint';
-import { isDelimiter } from '@core/parser/utils/helpers/other';
-import { last } from '@utils/helpers/array';
-import { TOKEN_TYPE } from '@core/model/utils/constants';
+import { Model } from '~core/model/model';
+import { TOKEN_TYPE } from '~core/model/utils/constants';
+import { parseHashTag } from '~core/parser/handlers/hashtag/hashtag';
+import { parseNewLine } from '~core/parser/handlers/newline/newline';
+import { parseText } from '~core/parser/handlers/text/text';
+import { resolveNextCodePointUnitCount, resolvePrevCodePointUnitCount } from '~core/parser/utils/helpers/codePoint';
+import { isDelimiter } from '~core/parser/utils/helpers/other';
+import { last } from '~utils/helpers/array';
 
 // eslint-disable-next-line
 interface IParser {

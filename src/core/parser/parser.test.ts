@@ -1,5 +1,5 @@
-import { Model } from '@core/model/model';
-import { Parser } from '@core/parser/parser';
+import { Model } from '~core/model/model';
+import { Parser } from '~core/parser/parser';
 
 describe('Parser class: constructor', () => {
   test('Parser with initial tokens should not be in consuming status if last token not text', () => {

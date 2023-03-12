@@ -1,5 +1,5 @@
-import { resolvePositionLocationInTokens } from '@core/formatter/utils/helpers/other';
-import { TOKEN_TYPE } from '@core/model/utils/constants';
+import { resolvePositionLocationInTokens } from '~core/formatter/utils/helpers/other';
+import { TOKEN_TYPE } from '~core/model/utils/constants';
 
 describe('\'resolvePositionLocationInTokens\' helper', () => {
   const firstValue = 'text1';

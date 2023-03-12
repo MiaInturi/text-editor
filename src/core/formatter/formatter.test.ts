@@ -1,5 +1,5 @@
-import { Formatter } from '@core/formatter/formatter';
-import { TOKEN_FORMAT, TOKEN_TYPE } from '@core/model/utils/constants';
+import { Formatter } from '~core/formatter/formatter';
+import { TOKEN_FORMAT, TOKEN_TYPE } from '~core/model/utils/constants';
 
 describe('Formatter class: validation', () => {
   test('Selection range should has \'from\' less than \'to\'', () => {

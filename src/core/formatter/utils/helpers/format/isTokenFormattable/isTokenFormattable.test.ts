@@ -1,5 +1,5 @@
-import { isTokenFormattable } from '@core/formatter/utils/helpers/format';
-import { TOKEN_TYPE } from '@core/model/utils/constants';
+import { isTokenFormattable } from '~core/formatter/utils/helpers/format';
+import { TOKEN_TYPE } from '~core/model/utils/constants';
 
 describe('\'isTokenFormattable\' helper', () => {
   test('Should return true only for token that can be format', () => {

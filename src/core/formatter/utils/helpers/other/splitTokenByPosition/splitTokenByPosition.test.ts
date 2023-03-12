@@ -1,5 +1,5 @@
-import { splitTokenByPosition } from '@core/formatter/utils/helpers/other';
-import { TOKEN_FORMAT, TOKEN_TYPE } from '@core/model/utils/constants';
+import { splitTokenByPosition } from '~core/formatter/utils/helpers/other';
+import { TOKEN_FORMAT, TOKEN_TYPE } from '~core/model/utils/constants';
 
 describe('\'splitTokenByPosition\' helper', () => {
   test('Should split token value by position (with saving other properties)', () => {

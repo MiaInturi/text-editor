@@ -1,4 +1,4 @@
-import { UTF16_UTIL } from '@core/parser/utils/constants';
+import { UTF16_UTIL } from '~core/parser/utils/constants';
 
 export const resolveNextCodePointUnitCount = (nextCodePoint: CodePoint): number => {
   const isNextCodePointIsSurrogatePair = nextCodePoint > UTF16_UTIL.UNIT_MAX_VALUE;

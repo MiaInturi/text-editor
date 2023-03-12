@@ -1,6 +1,6 @@
-import type { Parser } from '@core/parser/parser';
-import { Model } from '@core/model/model';
-import { UNICODE_CODES } from '@core/parser/utils/constants';
+import { Model } from '~core/model/model';
+import type { Parser } from '~core/parser/parser';
+import { UNICODE_CODES } from '~core/parser/utils/constants';
 
 const consumeNewLine = (parser: Parser): boolean => {
   // ✅ important:

@@ -1,5 +1,5 @@
-import { Model } from '@core/model/model';
-import { Parser } from '@core/parser/parser';
+import { Model } from '~core/model/model';
+import { Parser } from '~core/parser/parser';
 import { parseHashTag } from './hashtag';
 
 describe('Hashtag parsing: consuming symbols', () => {

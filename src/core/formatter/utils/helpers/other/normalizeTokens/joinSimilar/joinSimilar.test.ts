@@ -1,5 +1,5 @@
-import { joinSimilar } from '@core/formatter/utils/helpers/other/normalizeTokens/joinSimilar/joinSimilar';
-import { TOKEN_FORMAT, TOKEN_TYPE } from '@core/model/utils/constants';
+import { joinSimilar } from '~core/formatter/utils/helpers/other/normalizeTokens/joinSimilar/joinSimilar';
+import { TOKEN_FORMAT, TOKEN_TYPE } from '~core/model/utils/constants';
 
 describe('\'joinSimilar\' helper', () => {
   test('Should join tokens only with same type (\'text\') and equal formats', () => {

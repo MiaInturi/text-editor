@@ -1,5 +1,5 @@
-import { cloneToken } from '@core/model/utils/helpers/other';
-import { TOKEN_FORMAT, TOKEN_TYPE } from '@core/model/utils/constants';
+import { TOKEN_FORMAT, TOKEN_TYPE } from '~core/model/utils/constants';
+import { cloneToken } from '~core/model/utils/helpers/other';
 
 describe('\'cloneToken\' helper', () => {
   test('Should deep clone token', () => {

@@ -1,5 +1,5 @@
+import { TOKEN_FORMAT, TOKEN_TYPE } from '~core/model/utils/constants';
 import { Model } from './model';
-import { TOKEN_FORMAT, TOKEN_TYPE } from '@core/model/utils/constants';
 
 describe('Model class: creating tokens', () => {
   test('Should create text token with/without format', () => {
